@@ -69,9 +69,7 @@ contract Sale {
     }
 
     /// @notice Verify a permission signed by the configured `permissionSigner`.
-    function verifyPermission(
-        Permission calldata perm
-    ) private view returns (bool) {
+    function verifyPermission(Permission calldata perm) private view returns (bool) {
         address signer = permissionSigner;
         if (signer == address(0)) return false;
 
@@ -106,7 +104,7 @@ contract Sale {
     /// @notice Withdraw full contract balance to the owner.
     function withdraw() external onlyOwner {
         uint256 amount = address(this).balance;
-        (bool ok, ) = payable(owner).call{value: amount}("");
+        (bool ok,) = payable(owner).call{value: amount}("");
         require(ok, "Withdraw failed");
         emit Withdrawn(owner, amount);
     }
