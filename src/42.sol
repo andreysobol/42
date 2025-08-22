@@ -7,12 +7,19 @@ import {ERC721Enumerable} from "openzeppelin-contracts/contracts/token/ERC721/ex
 contract NFT42 is ERC721, ERC721Enumerable {
     uint256 private _nextTokenId;
     string private _baseMetadataURI;
+    address public sale;
 
-    constructor(string memory baseMetadataURI) ERC721("Glitch", "GLCH") {
+    constructor(string memory baseMetadataURI, address sale_) ERC721("Glitch", "GLCH") {
         _baseMetadataURI = baseMetadataURI;
+        sale = sale_;
     }
 
-    function mint(address to) external returns (uint256 tokenId) {
+    modifier onlySale() {
+        require(msg.sender == sale, "Not sale");
+        _;
+    }
+
+    function mint(address to) external onlySale returns (uint256 tokenId) {
         require(_nextTokenId < 1024, "Maximum tokens (1024) already minted");
         tokenId = _nextTokenId;
         _nextTokenId += 1;
