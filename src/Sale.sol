@@ -15,6 +15,7 @@ contract Sale {
         bytes32 s;
     }
     /// @dev Basic ownable pattern w/o external deps.
+
     address public owner;
     NFT42 public immutable nft;
 

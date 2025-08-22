@@ -44,13 +44,7 @@ contract SaleTest is Test {
 
         // Build Permission struct
         // struct Permission { address minter; uint32 key; uint8 v; bytes32 r; bytes32 s; }
-        Sale.Permission memory perm = Sale.Permission({
-            minter: buyer,
-            key: key,
-            v: v,
-            r: r,
-            s: s
-        });
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
 
         // Execute buy
         vm.prank(buyer);
@@ -71,18 +65,10 @@ contract SaleTest is Test {
         // Force a v that won't match signer (27 here is fine; r,s are wrong)
         uint8 v = 27;
 
-        Sale.Permission memory perm = Sale.Permission({
-            minter: buyer,
-            key: key,
-            v: v,
-            r: r,
-            s: s
-        });
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
 
         vm.prank(buyer);
         vm.expectRevert(Sale.IncorrectPermission.selector);
         sale.buy{value: PRICE}(perm);
     }
 }
-
-
