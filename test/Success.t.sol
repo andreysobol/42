@@ -5,7 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
 import {Sale} from "../src/Sale.sol";
 
-contract SignatureTest is Test {
+contract SuccessTest is Test {
     NFT42 private nft;
     Sale private sale;
 
@@ -28,30 +28,21 @@ contract SignatureTest is Test {
         vm.deal(buyer, 1 ether);
     }
 
-    function test_signature_verifyPermission_and_buy_success() public {
+    function test_successful_buy_with_valid_signature() public {
         uint32 key = 42;
         bytes32 digest = keccak256(abi.encodePacked(buyer, key));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
         Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
 
+        // Expect Purchased event; check buyer (topic1) and data (price), ignore tokenId
+        vm.expectEmit(true, false, false, true);
+        emit Sale.Purchased(buyer, 0, PRICE);
+
         vm.prank(buyer);
         uint256 tokenId = sale.buy{value: PRICE}(perm);
-        assertEq(nft.ownerOf(tokenId), buyer);
-        assertTrue(sale.redeemed_key(key));
-    }
 
-    function test_signature_invalidSignature_reverts() public {
-        uint32 key = 7;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
-        uint256 wrongPk = 0xB0B;
-        (, bytes32 r, bytes32 s) = vm.sign(wrongPk, digest);
-        uint8 v = 27;
-
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
-
-        vm.prank(buyer);
-        vm.expectRevert(Sale.IncorrectPermission.selector);
-        sale.buy{value: PRICE}(perm);
+        assertEq(nft.ownerOf(tokenId), buyer, "owner should be buyer");
+        assertTrue(sale.redeemed_key(key), "key should be marked redeemed");
     }
 }

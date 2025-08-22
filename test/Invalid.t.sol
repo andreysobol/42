@@ -5,7 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
 import {Sale} from "../src/Sale.sol";
 
-contract SignatureTest is Test {
+contract InvalidTest is Test {
     NFT42 private nft;
     Sale private sale;
 
@@ -28,28 +28,36 @@ contract SignatureTest is Test {
         vm.deal(buyer, 1 ether);
     }
 
-    function test_signature_verifyPermission_and_buy_success() public {
-        uint32 key = 42;
+    function test_invalid_signature_wrong_private_key() public {
+        uint32 key = 7;
         bytes32 digest = keccak256(abi.encodePacked(buyer, key));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
+
+        // Sign with the wrong private key
+        uint256 wrongPk = 0xB0B;
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(wrongPk, digest);
 
         Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
 
         vm.prank(buyer);
-        uint256 tokenId = sale.buy{value: PRICE}(perm);
-        assertEq(nft.ownerOf(tokenId), buyer);
-        assertTrue(sale.redeemed_key(key));
+        vm.expectRevert(Sale.IncorrectPermission.selector);
+        sale.buy{value: PRICE}(perm);
     }
 
-    function test_signature_invalidSignature_reverts() public {
-        uint32 key = 7;
+    function test_wrong_signer_configured() public {
+        uint32 key = 42;
         bytes32 digest = keccak256(abi.encodePacked(buyer, key));
-        uint256 wrongPk = 0xB0B;
-        (, bytes32 r, bytes32 s) = vm.sign(wrongPk, digest);
-        uint8 v = 27;
+
+        // Sign with the original permission signer
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
         Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
 
+        // Change the permission signer to a new one
+        address newSigner = makeAddr("newSigner");
+        vm.prank(address(this));
+        sale.setPermissionSigner(newSigner);
+
+        // Try to use the old signer's signature - should fail
         vm.prank(buyer);
         vm.expectRevert(Sale.IncorrectPermission.selector);
         sale.buy{value: PRICE}(perm);

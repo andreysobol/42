@@ -5,7 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
 import {Sale} from "../src/Sale.sol";
 
-contract SignatureTest is Test {
+contract EventsTest is Test {
     NFT42 private nft;
     Sale private sale;
 
@@ -25,33 +25,39 @@ contract SignatureTest is Test {
         sale = new Sale(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
-        vm.deal(buyer, 1 ether);
+        vm.deal(buyer, 2 ether);
     }
 
-    function test_signature_verifyPermission_and_buy_success() public {
+    function test_purchased_event_logs_correct_data() public {
         uint32 key = 42;
         bytes32 digest = keccak256(abi.encodePacked(buyer, key));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
         Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
 
+        // Expect Purchased event with correct buyer, tokenId, and price
+        vm.expectEmit(true, true, false, true);
+        emit Sale.Purchased(buyer, 0, PRICE);
+
         vm.prank(buyer);
-        uint256 tokenId = sale.buy{value: PRICE}(perm);
-        assertEq(nft.ownerOf(tokenId), buyer);
-        assertTrue(sale.redeemed_key(key));
+        sale.buy{value: PRICE}(perm);
     }
 
-    function test_signature_invalidSignature_reverts() public {
-        uint32 key = 7;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
-        uint256 wrongPk = 0xB0B;
-        (, bytes32 r, bytes32 s) = vm.sign(wrongPk, digest);
-        uint8 v = 27;
+    function test_price_updated_event() public {
+        uint256 newPrice = 0.02 ether;
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        vm.expectEmit(false, false, false, true);
+        emit Sale.PriceUpdated(PRICE, newPrice);
 
-        vm.prank(buyer);
-        vm.expectRevert(Sale.IncorrectPermission.selector);
-        sale.buy{value: PRICE}(perm);
+        sale.setPrice(newPrice);
+    }
+
+    function test_permission_signer_updated_event() public {
+        address newSigner = makeAddr("newSigner");
+
+        vm.expectEmit(true, true, false, false);
+        emit Sale.PermissionSignerUpdated(permissionSigner, newSigner);
+
+        sale.setPermissionSigner(newSigner);
     }
 }

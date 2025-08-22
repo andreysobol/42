@@ -5,7 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
 import {Sale} from "../src/Sale.sol";
 
-contract SignatureTest is Test {
+contract MinterMismatchTest is Test {
     NFT42 private nft;
     Sale private sale;
 
@@ -13,6 +13,7 @@ contract SignatureTest is Test {
     uint256 private permissionSignerPk;
 
     address private buyer;
+    address private other;
 
     uint256 private constant PRICE = 0.01 ether;
 
@@ -25,30 +26,25 @@ contract SignatureTest is Test {
         sale = new Sale(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
+        other = makeAddr("other");
         vm.deal(buyer, 1 ether);
+        vm.deal(other, 1 ether);
     }
 
-    function test_signature_verifyPermission_and_buy_success() public {
+    function test_signature_over_different_minter() public {
         uint32 key = 42;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+
+        // Sign for 'other' address but try to use for 'buyer'
+        bytes32 digest = keccak256(abi.encodePacked(other, key));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
-
-        vm.prank(buyer);
-        uint256 tokenId = sale.buy{value: PRICE}(perm);
-        assertEq(nft.ownerOf(tokenId), buyer);
-        assertTrue(sale.redeemed_key(key));
-    }
-
-    function test_signature_invalidSignature_reverts() public {
-        uint32 key = 7;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
-        uint256 wrongPk = 0xB0B;
-        (, bytes32 r, bytes32 s) = vm.sign(wrongPk, digest);
-        uint8 v = 27;
-
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({
+            minter: buyer, // Different from what was signed (other)
+            key: key,
+            v: v,
+            r: r,
+            s: s
+        });
 
         vm.prank(buyer);
         vm.expectRevert(Sale.IncorrectPermission.selector);
