@@ -46,14 +46,14 @@ contract Sale {
         _;
     }
 
-    constructor(NFT42 nft_, uint256 price_, address permissionSigner_) {
-        if (address(nft_) == address(0)) revert ZeroAddress();
-        if (permissionSigner_ == address(0)) revert ZeroAddress();
+    constructor(NFT42 _nft, uint256 _price, address _permissionSigner) {
+        if (address(_nft) == address(0)) revert ZeroAddress();
+        if (_permissionSigner == address(0)) revert ZeroAddress();
         owner = msg.sender;
-        nft = nft_;
-        if (price_ == 0) revert InvalidPrice();
-        price = price_;
-        permissionSigner = permissionSigner_;
+        nft = _nft;
+        if (_price == 0) revert InvalidPrice();
+        price = _price;
+        permissionSigner = _permissionSigner;
     }
 
     /// @notice Purchase and mint one NFT to the `perm.minter` address.
@@ -82,23 +82,23 @@ contract Sale {
     }
 
     /// @notice Update the permission signer address.
-    function setPermissionSigner(address newSigner) external onlyOwner {
+    function setPermissionSigner(address _newSigner) external onlyOwner {
         address old = permissionSigner;
-        permissionSigner = newSigner;
-        emit PermissionSignerUpdated(old, newSigner);
+        permissionSigner = _newSigner;
+        emit PermissionSignerUpdated(old, _newSigner);
     }
 
     /// @notice Update the price per NFT.
-    function setPrice(uint256 newPrice) external onlyOwner {
-        if (newPrice == 0) revert InvalidPrice();
+    function setPrice(uint256 _newPrice) external onlyOwner {
+        if (_newPrice == 0) revert InvalidPrice();
         uint256 old = price;
-        price = newPrice;
-        emit PriceUpdated(old, newPrice);
+        price = _newPrice;
+        emit PriceUpdated(old, _newPrice);
     }
 
     /// @notice Transfer ownership to a new account.
-    function transferOwnership(address newOwner) external onlyOwner {
-        owner = newOwner;
+    function transferOwnership(address _newOwner) external onlyOwner {
+        owner = _newOwner;
     }
 
     /// @notice Withdraw full contract balance to the owner.
