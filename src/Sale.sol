@@ -4,17 +4,16 @@ pragma solidity ^0.8.24;
 import {NFT42} from "./42.sol";
 import {ECDSA} from "openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol";
 
-struct Permission {
-    address minter;
-    uint32 key;
-    uint8 v;
-    bytes32 r;
-    bytes32 s;
-}
-
 /// @title NFT42 Sale
 /// @notice Simple public sale contract to mint and sell Glitch NFTs for a fixed price.
 contract Sale {
+    struct Permission {
+        address minter;
+        uint32 key;
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+    }
     /// @dev Basic ownable pattern w/o external deps.
     address public owner;
     NFT42 public immutable nft;
