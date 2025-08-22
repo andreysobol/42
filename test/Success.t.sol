@@ -13,6 +13,7 @@ contract SuccessTest is Test {
     uint256 private permissionSignerPk;
 
     address private buyer;
+    address private receiver;
 
     uint256 private constant PRICE = 0.01 ether;
 
@@ -25,15 +26,18 @@ contract SuccessTest is Test {
         sale = new Sale(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
+        receiver = makeAddr("receiver");
         vm.deal(buyer, 1 ether);
     }
 
-    function test_successful_buy_with_valid_signature() public {
+    function test_successful_buy_and_transfer() public {
         uint32 key = 42;
         bytes32 digest = keccak256(abi.encodePacked(buyer, key));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
         Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+
+        assertEq(nft.totalSupply(), 0, "total supply should be 0 before minting");
 
         // Expect Purchased event; check buyer (topic1) and data (price), ignore tokenId
         vm.expectEmit(true, false, false, true);
@@ -42,7 +46,15 @@ contract SuccessTest is Test {
         vm.prank(buyer);
         uint256 tokenId = sale.buy{value: PRICE}(perm);
 
+        assertEq(nft.totalSupply(), 1, "total supply should be 1 after minting");
         assertEq(nft.ownerOf(tokenId), buyer, "owner should be buyer");
         assertTrue(sale.redeemed_key(key), "key should be marked redeemed");
+
+        vm.prank(buyer);
+        nft.safeTransferFrom(buyer, receiver, tokenId);
+        assertEq(nft.ownerOf(tokenId), receiver, "owner should be receiver after transfer");
+        assertEq(nft.balanceOf(buyer), 0, "buyer should no longer own any NFT");
+        assertEq(nft.balanceOf(receiver), 1, "receiver should own 1 NFT");
+        assertEq(nft.totalSupply(), 1, "total supply should still be 1");
     }
 }
