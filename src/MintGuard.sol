@@ -27,7 +27,7 @@ contract MintGuard {
     /// @notice Tracks whether an address has already minted.
     mapping(address => bool) public mint_address;
 
-    event Purchased(address indexed buyer, uint256 indexed tokenId, uint256 pricePaid);
+    event Minted(address indexed buyer, uint256 indexed tokenId, uint256 pricePaid);
     event PriceUpdated(uint256 oldPrice, uint256 newPrice);
     event PermissionSignerUpdated(address indexed oldSigner, address indexed newSigner);
     event Withdrawn(address indexed to, uint256 amount);
@@ -64,7 +64,7 @@ contract MintGuard {
         if (mint_address[perm.minter]) revert AlreadyMinted();
         tokenId = nft.mint(perm.minter);
         mint_address[perm.minter] = true;
-        emit Purchased(msg.sender, tokenId, msg.value);
+        emit Minted(msg.sender, tokenId, msg.value);
     }
 
     /// @notice Verify a permission signed by the configured `permissionSigner`.

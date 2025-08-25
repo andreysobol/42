@@ -38,9 +38,9 @@ contract SuccessTest is Test {
 
         assertEq(nft.totalSupply(), 0, "total supply should be 0 before minting");
 
-        // Expect Purchased event; check buyer (topic1) and data (price), ignore tokenId
+        // Expect Minted event; check buyer (topic1) and data (price), ignore tokenId
         vm.expectEmit(true, false, false, true);
-        emit MintGuard.Purchased(buyer, 0, PRICE);
+        emit MintGuard.Minted(buyer, 0, PRICE);
 
         vm.prank(buyer);
         uint256 tokenId = sale.buy{value: PRICE}(perm);

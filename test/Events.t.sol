@@ -28,15 +28,15 @@ contract EventsTest is Test {
         vm.deal(buyer, 2 ether);
     }
 
-    function test_purchased_event_logs_correct_data() public {
+    function test_minted_event_logs_correct_data() public {
         bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
         MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
 
-        // Expect Purchased event with correct buyer, tokenId, and price
+        // Expect Minted event with correct buyer, tokenId, and price
         vm.expectEmit(true, true, false, true);
-        emit MintGuard.Purchased(buyer, 0, PRICE);
+        emit MintGuard.Minted(buyer, 0, PRICE);
 
         vm.prank(buyer);
         sale.buy{value: PRICE}(perm);
