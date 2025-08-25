@@ -29,11 +29,10 @@ contract EventsTest is Test {
     }
 
     function test_purchased_event_logs_correct_data() public {
-        uint32 key = 42;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
 
         // Expect Purchased event with correct buyer, tokenId, and price
         vm.expectEmit(true, true, false, true);

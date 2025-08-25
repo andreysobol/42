@@ -5,14 +5,15 @@ import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
 import {Sale} from "../src/Sale.sol";
 
-contract KeyMismatchTest is Test {
+contract MinterMismatchTest is Test {
     NFT42 private nft;
     Sale private sale;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
 
-    address private buyer;
+    address private buyer1;
+    address private buyer2;
 
     uint256 private constant PRICE = 0.01 ether;
 
@@ -24,27 +25,25 @@ contract KeyMismatchTest is Test {
         nft = new NFT42("ipfs://base/", predictedSale);
         sale = new Sale(nft, PRICE, permissionSigner);
 
-        buyer = makeAddr("buyer");
-        vm.deal(buyer, 1 ether);
+        buyer1 = makeAddr("buyer1");
+        buyer2 = makeAddr("buyer2");
+        vm.deal(buyer1, 1 ether);
+        vm.deal(buyer2, 1 ether);
     }
 
-    function test_signature_over_different_key() public {
-        uint32 keyA = 42;
-        uint32 keyB = 7;
-
-        // Sign for keyA but try to use keyB
-        bytes32 digest = keccak256(abi.encodePacked(buyer, keyA));
+    function test_signature_over_different_minter() public {
+        // Sign for buyer1 but try to use buyer2
+        bytes32 digest = keccak256(abi.encodePacked(buyer1));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
         Sale.Permission memory perm = Sale.Permission({
-            minter: buyer,
-            key: keyB, // Different from what was signed (keyA)
+            minter: buyer2, // Different from what was signed (buyer1)
             v: v,
             r: r,
             s: s
         });
 
-        vm.prank(buyer);
+        vm.prank(buyer2);
         vm.expectRevert(Sale.IncorrectPermission.selector);
         sale.buy{value: PRICE}(perm);
     }

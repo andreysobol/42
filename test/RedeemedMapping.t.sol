@@ -5,14 +5,16 @@ import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
 import {Sale} from "../src/Sale.sol";
 
-contract RedeemedMappingTest is Test {
+contract MintAddressMappingTest is Test {
     NFT42 private nft;
     Sale private sale;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
 
-    address private buyer;
+    address private buyer1;
+    address private buyer2;
+    address private buyer3;
 
     uint256 private constant PRICE = 0.01 ether;
 
@@ -24,64 +26,62 @@ contract RedeemedMappingTest is Test {
         nft = new NFT42("ipfs://base/", predictedSale);
         sale = new Sale(nft, PRICE, permissionSigner);
 
-        buyer = makeAddr("buyer");
-        vm.deal(buyer, 2 ether);
+        buyer1 = makeAddr("buyer1");
+        buyer2 = makeAddr("buyer2");
+        buyer3 = makeAddr("buyer3");
+        vm.deal(buyer1, 2 ether);
+        vm.deal(buyer2, 2 ether);
+        vm.deal(buyer3, 2 ether);
     }
 
-    function test_redeemed_mapping_visibility() public {
-        uint32 key = 42;
+    function test_mint_address_mapping_visibility() public {
+        // Check that address is not minted before purchase
+        assertFalse(sale.mint_address(buyer1), "Address should not be minted before purchase");
 
-        // Check that key is not redeemed before purchase
-        assertFalse(sale.redeemed_key(key), "Key should not be redeemed before purchase");
-
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer1));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer1, v: v, r: r, s: s});
 
-        vm.prank(buyer);
+        vm.prank(buyer1);
         sale.buy{value: PRICE}(perm);
 
-        // Check that key is redeemed after purchase
-        assertTrue(sale.redeemed_key(key), "Key should be redeemed after purchase");
+        // Check that address is minted after purchase
+        assertTrue(sale.mint_address(buyer1), "Address should be minted after purchase");
     }
 
-    function test_multiple_keys_redeemed_mapping() public {
-        uint32 key1 = 100;
-        uint32 key2 = 200;
-        uint32 key3 = 300;
+    function test_multiple_addresses_mint_mapping() public {
+        // Check all addresses are not minted initially
+        assertFalse(sale.mint_address(buyer1), "Buyer1 should not be minted initially");
+        assertFalse(sale.mint_address(buyer2), "Buyer2 should not be minted initially");
+        assertFalse(sale.mint_address(buyer3), "Buyer3 should not be minted initially");
 
-        // Check all keys are not redeemed initially
-        assertFalse(sale.redeemed_key(key1), "Key1 should not be redeemed initially");
-        assertFalse(sale.redeemed_key(key2), "Key2 should not be redeemed initially");
-        assertFalse(sale.redeemed_key(key3), "Key3 should not be redeemed initially");
-
-        // Purchase with key1
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key1));
+        // Purchase with buyer1
+        bytes32 digest = keccak256(abi.encodePacked(buyer1));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key1, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer1, v: v, r: r, s: s});
 
-        vm.prank(buyer);
+        vm.prank(buyer1);
         sale.buy{value: PRICE}(perm);
 
-        // Check only key1 is redeemed
-        assertTrue(sale.redeemed_key(key1), "Key1 should be redeemed after purchase");
-        assertFalse(sale.redeemed_key(key2), "Key2 should still not be redeemed");
-        assertFalse(sale.redeemed_key(key3), "Key3 should still not be redeemed");
+        // Check only buyer1 is minted
+        assertTrue(sale.mint_address(buyer1), "Buyer1 should be minted after purchase");
+        assertFalse(sale.mint_address(buyer2), "Buyer2 should still not be minted");
+        assertFalse(sale.mint_address(buyer3), "Buyer3 should still not be minted");
 
-        // Purchase with key2
-        digest = keccak256(abi.encodePacked(buyer, key2));
+        // Purchase with buyer2
+        digest = keccak256(abi.encodePacked(buyer2));
         (v, r, s) = vm.sign(permissionSignerPk, digest);
 
-        perm = Sale.Permission({minter: buyer, key: key2, v: v, r: r, s: s});
+        perm = Sale.Permission({minter: buyer2, v: v, r: r, s: s});
 
-        vm.prank(buyer);
+        vm.prank(buyer2);
         sale.buy{value: PRICE}(perm);
 
-        // Check key1 and key2 are redeemed, key3 is not
-        assertTrue(sale.redeemed_key(key1), "Key1 should still be redeemed");
-        assertTrue(sale.redeemed_key(key2), "Key2 should be redeemed after purchase");
-        assertFalse(sale.redeemed_key(key3), "Key3 should still not be redeemed");
+        // Check buyer1 and buyer2 are minted, buyer3 is not
+        assertTrue(sale.mint_address(buyer1), "Buyer1 should still be minted");
+        assertTrue(sale.mint_address(buyer2), "Buyer2 should be minted after purchase");
+        assertFalse(sale.mint_address(buyer3), "Buyer3 should still not be minted");
     }
 }

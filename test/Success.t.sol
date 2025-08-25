@@ -31,11 +31,10 @@ contract SuccessTest is Test {
     }
 
     function test_successful_buy_and_transfer() public {
-        uint32 key = 42;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
 
         assertEq(nft.totalSupply(), 0, "total supply should be 0 before minting");
 

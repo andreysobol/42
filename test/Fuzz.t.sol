@@ -28,62 +28,70 @@ contract FuzzTest is Test {
         vm.deal(buyer, 1000 ether); // Fund for many purchases
     }
 
-    function testFuzz_random_keys_uniqueness(uint32 key) public {
-        // Skip if key is 0 to avoid potential issues
-        vm.assume(key != 0);
+    function testFuzz_random_addresses_uniqueness(address minter) public {
+        // Skip if minter is zero address
+        vm.assume(minter != address(0));
+        vm.assume(minter.code.length == 0); // Skip contract addresses
 
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(minter));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: minter, v: v, r: r, s: s});
+
+        // Fund the minter
+        vm.deal(minter, PRICE);
 
         // First purchase should succeed
-        vm.prank(buyer);
+        vm.prank(minter);
         uint256 tokenId = sale.buy{value: PRICE}(perm);
-        assertEq(nft.ownerOf(tokenId), buyer, "Owner should be buyer");
-        assertTrue(sale.redeemed_key(key), "Key should be marked redeemed");
+        assertEq(nft.ownerOf(tokenId), minter, "Owner should be minter");
+        assertTrue(sale.mint_address(minter), "Address should be marked as minted");
 
-        // Second purchase with same key should fail
-        vm.prank(buyer);
-        vm.expectRevert(Sale.KeyAlreadyRedeemed.selector);
+        // Second purchase with same address should fail
+        vm.deal(minter, PRICE);
+        vm.prank(minter);
+        vm.expectRevert(Sale.AlreadyMinted.selector);
         sale.buy{value: PRICE}(perm);
     }
 
-    function testFuzz_multiple_random_keys(uint32[5] memory keys) public {
-        for (uint256 i = 0; i < keys.length; i++) {
-            uint32 key = keys[i];
-            vm.assume(key != 0); // Skip zero keys
+    function testFuzz_multiple_random_addresses(address[5] memory minters) public {
+        for (uint256 i = 0; i < minters.length; i++) {
+            address minter = minters[i];
+            vm.assume(minter != address(0)); // Skip zero addresses
+            vm.assume(minter.code.length == 0); // Skip contract addresses
 
-            // Skip if key was already used in this test
-            if (sale.redeemed_key(key)) continue;
+            // Skip if address was already used in this test
+            if (sale.mint_address(minter)) continue;
 
-            bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+            bytes32 digest = keccak256(abi.encodePacked(minter));
             (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-            Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+            Sale.Permission memory perm = Sale.Permission({minter: minter, v: v, r: r, s: s});
 
-            // Purchase should succeed for unique keys
-            vm.prank(buyer);
+            // Fund the minter
+            vm.deal(minter, PRICE);
+
+            // Purchase should succeed for unique addresses
+            vm.prank(minter);
             uint256 tokenId = sale.buy{value: PRICE}(perm);
-            assertEq(nft.ownerOf(tokenId), buyer, "Owner should be buyer");
-            assertTrue(sale.redeemed_key(key), "Key should be marked redeemed");
+            assertEq(nft.ownerOf(tokenId), minter, "Owner should be minter");
+            assertTrue(sale.mint_address(minter), "Address should be marked as minted");
         }
     }
 
-    function testFuzz_random_minter_and_key(address minter, uint32 key) public {
+    function testFuzz_random_minter(address minter) public {
         vm.assume(minter != address(0));
-        vm.assume(key != 0);
         vm.assume(minter.code.length == 0); // Skip contract addresses
 
-        bytes32 digest = keccak256(abi.encodePacked(minter, key));
+        bytes32 digest = keccak256(abi.encodePacked(minter));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: minter, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: minter, v: v, r: r, s: s});
 
         vm.deal(minter, PRICE);
         vm.prank(minter);
         uint256 tokenId = sale.buy{value: PRICE}(perm);
         assertEq(nft.ownerOf(tokenId), minter, "Owner should be minter");
-        assertTrue(sale.redeemed_key(key), "Key should be marked redeemed");
+        assertTrue(sale.mint_address(minter), "Address should be marked as minted");
     }
 }

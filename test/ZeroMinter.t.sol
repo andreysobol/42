@@ -29,13 +29,11 @@ contract ZeroMinterTest is Test {
     }
 
     function test_zero_minter_reverts() public {
-        uint32 key = 42;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
         Sale.Permission memory perm = Sale.Permission({
             minter: address(0), // Zero address
-            key: key,
             v: v,
             r: r,
             s: s

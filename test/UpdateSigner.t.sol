@@ -35,13 +35,11 @@ contract UpdateSignerTest is Test {
     }
 
     function test_update_permission_signer() public {
-        uint32 key = 42;
-
         // Sign with old signer
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
 
         // Old signer should work before update
         vm.prank(buyer);
@@ -53,25 +51,27 @@ contract UpdateSignerTest is Test {
         sale.setPermissionSigner(newSigner);
 
         // Old signer should not work after update
-        uint32 key2 = 43;
-        digest = keccak256(abi.encodePacked(buyer, key2));
+        address buyer2 = address(uint160(uint160(buyer) + 1));
+        vm.deal(buyer2, 2 ether);
+        digest = keccak256(abi.encodePacked(buyer2));
         (v, r, s) = vm.sign(permissionSignerPk, digest);
 
-        perm = Sale.Permission({minter: buyer, key: key2, v: v, r: r, s: s});
+        perm = Sale.Permission({minter: buyer2, v: v, r: r, s: s});
 
-        vm.prank(buyer);
+        vm.prank(buyer2);
         vm.expectRevert(Sale.IncorrectPermission.selector);
         sale.buy{value: PRICE}(perm);
 
         // New signer should work after update
-        uint32 key3 = 44;
-        digest = keccak256(abi.encodePacked(buyer, key3));
+        address buyer3 = address(uint160(uint160(buyer) + 2));
+        vm.deal(buyer3, 2 ether);
+        digest = keccak256(abi.encodePacked(buyer3));
         (v, r, s) = vm.sign(newSignerPk, digest);
 
-        perm = Sale.Permission({minter: buyer, key: key3, v: v, r: r, s: s});
+        perm = Sale.Permission({minter: buyer3, v: v, r: r, s: s});
 
-        vm.prank(buyer);
+        vm.prank(buyer3);
         tokenId = sale.buy{value: PRICE}(perm);
-        assertEq(nft.ownerOf(tokenId), buyer, "New signer should work after update");
+        assertEq(nft.ownerOf(tokenId), buyer3, "New signer should work after update");
     }
 }

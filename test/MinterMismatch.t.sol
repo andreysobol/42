@@ -32,15 +32,12 @@ contract MinterMismatchTest is Test {
     }
 
     function test_signature_over_different_minter() public {
-        uint32 key = 42;
-
         // Sign for 'other' address but try to use for 'buyer'
-        bytes32 digest = keccak256(abi.encodePacked(other, key));
+        bytes32 digest = keccak256(abi.encodePacked(other));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
         Sale.Permission memory perm = Sale.Permission({
             minter: buyer, // Different from what was signed (other)
-            key: key,
             v: v,
             r: r,
             s: s
