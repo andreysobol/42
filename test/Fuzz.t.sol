@@ -43,7 +43,7 @@ contract FuzzTest is Test {
 
         // First purchase should succeed
         vm.prank(minter);
-        uint256 tokenId = mintGuard.buy{value: PRICE}(perm);
+        uint256 tokenId = mintGuard.mint{value: PRICE}(perm);
         assertEq(nft.ownerOf(tokenId), minter, "Owner should be minter");
         assertTrue(mintGuard.mint_address(minter), "Address should be marked as minted");
 
@@ -51,7 +51,7 @@ contract FuzzTest is Test {
         vm.deal(minter, PRICE);
         vm.prank(minter);
         vm.expectRevert(MintGuard.AlreadyMinted.selector);
-        mintGuard.buy{value: PRICE}(perm);
+        mintGuard.mint{value: PRICE}(perm);
     }
 
     function testFuzz_multiple_random_addresses(address[5] memory minters) public {
@@ -73,7 +73,7 @@ contract FuzzTest is Test {
 
             // Purchase should succeed for unique addresses
             vm.prank(minter);
-            uint256 tokenId = mintGuard.buy{value: PRICE}(perm);
+            uint256 tokenId = mintGuard.mint{value: PRICE}(perm);
             assertEq(nft.ownerOf(tokenId), minter, "Owner should be minter");
             assertTrue(mintGuard.mint_address(minter), "Address should be marked as minted");
         }
@@ -90,7 +90,7 @@ contract FuzzTest is Test {
 
         vm.deal(minter, PRICE);
         vm.prank(minter);
-        uint256 tokenId = mintGuard.buy{value: PRICE}(perm);
+        uint256 tokenId = mintGuard.mint{value: PRICE}(perm);
         assertEq(nft.ownerOf(tokenId), minter, "Owner should be minter");
         assertTrue(mintGuard.mint_address(minter), "Address should be marked as minted");
     }

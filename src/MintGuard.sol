@@ -55,9 +55,9 @@ contract MintGuard {
         permissionSigner = _permissionSigner;
     }
 
-    /// @notice Purchase and mint one NFT to the `perm.minter` address.
+    /// @notice Mint one NFT to the `perm.minter` address.
     /// @param perm Permission proving the mint is authorized.
-    function buy(Permission calldata perm) external payable returns (uint256 tokenId) {
+    function mint(Permission calldata perm) external payable returns (uint256 tokenId) {
         if (msg.value != price) revert IncorrectPayment(price, msg.value);
         if (perm.minter == address(0)) revert ZeroAddress();
         if (!verifyPermission(perm)) revert IncorrectPermission();

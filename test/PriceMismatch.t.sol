@@ -36,7 +36,7 @@ contract PriceMismatchTest is Test {
 
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(MintGuard.IncorrectPayment.selector, PRICE, PRICE - 0.001 ether));
-        mintGuard.buy{value: PRICE - 0.001 ether}(perm);
+        mintGuard.mint{value: PRICE - 0.001 ether}(perm);
     }
 
     function test_price_mismatch_send_more() public {
@@ -47,6 +47,6 @@ contract PriceMismatchTest is Test {
 
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(MintGuard.IncorrectPayment.selector, PRICE, PRICE + 0.001 ether));
-        mintGuard.buy{value: PRICE + 0.001 ether}(perm);
+        mintGuard.mint{value: PRICE + 0.001 ether}(perm);
     }
 }

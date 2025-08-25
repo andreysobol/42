@@ -44,7 +44,7 @@ contract MintAddressMappingTest is Test {
         MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer1, v: v, r: r, s: s});
 
         vm.prank(buyer1);
-        mintGuard.buy{value: PRICE}(perm);
+        mintGuard.mint{value: PRICE}(perm);
 
         // Check that address is minted after purchase
         assertTrue(mintGuard.mint_address(buyer1), "Address should be minted after purchase");
@@ -63,7 +63,7 @@ contract MintAddressMappingTest is Test {
         MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer1, v: v, r: r, s: s});
 
         vm.prank(buyer1);
-        mintGuard.buy{value: PRICE}(perm);
+        mintGuard.mint{value: PRICE}(perm);
 
         // Check only buyer1 is minted
         assertTrue(mintGuard.mint_address(buyer1), "Buyer1 should be minted after purchase");
@@ -77,7 +77,7 @@ contract MintAddressMappingTest is Test {
         perm = MintGuard.Permission({minter: buyer2, v: v, r: r, s: s});
 
         vm.prank(buyer2);
-        mintGuard.buy{value: PRICE}(perm);
+        mintGuard.mint{value: PRICE}(perm);
 
         // Check buyer1 and buyer2 are minted, buyer3 is not
         assertTrue(mintGuard.mint_address(buyer1), "Buyer1 should still be minted");

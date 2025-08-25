@@ -35,7 +35,7 @@ contract SignatureTest is Test {
         MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
 
         vm.prank(buyer);
-        uint256 tokenId = mintGuard.buy{value: PRICE}(perm);
+        uint256 tokenId = mintGuard.mint{value: PRICE}(perm);
         assertEq(nft.ownerOf(tokenId), buyer);
         assertTrue(mintGuard.mint_address(buyer));
     }
@@ -50,6 +50,6 @@ contract SignatureTest is Test {
 
         vm.prank(buyer);
         vm.expectRevert(MintGuard.IncorrectPermission.selector);
-        mintGuard.buy{value: PRICE}(perm);
+        mintGuard.mint{value: PRICE}(perm);
     }
 }

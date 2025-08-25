@@ -41,6 +41,6 @@ contract ZeroMinterTest is Test {
 
         vm.prank(buyer);
         vm.expectRevert(MintGuard.ZeroAddress.selector);
-        mintGuard.buy{value: PRICE}(perm);
+        mintGuard.mint{value: PRICE}(perm);
     }
 }

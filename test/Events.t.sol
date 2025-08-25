@@ -39,7 +39,7 @@ contract EventsTest is Test {
         emit MintGuard.Minted(buyer, 0, PRICE);
 
         vm.prank(buyer);
-        mintGuard.buy{value: PRICE}(perm);
+        mintGuard.mint{value: PRICE}(perm);
     }
 
     function test_price_updated_event() public {

@@ -43,7 +43,7 @@ contract UpdateSignerTest is Test {
 
         // Old signer should work before update
         vm.prank(buyer);
-        uint256 tokenId = mintGuard.buy{value: PRICE}(perm);
+        uint256 tokenId = mintGuard.mint{value: PRICE}(perm);
         assertEq(nft.ownerOf(tokenId), buyer, "Old signer should work before update");
 
         // Update permission signer
@@ -60,7 +60,7 @@ contract UpdateSignerTest is Test {
 
         vm.prank(buyer2);
         vm.expectRevert(MintGuard.IncorrectPermission.selector);
-        mintGuard.buy{value: PRICE}(perm);
+        mintGuard.mint{value: PRICE}(perm);
 
         // New signer should work after update
         address buyer3 = address(uint160(uint160(buyer) + 2));
@@ -71,7 +71,7 @@ contract UpdateSignerTest is Test {
         perm = MintGuard.Permission({minter: buyer3, v: v, r: r, s: s});
 
         vm.prank(buyer3);
-        tokenId = mintGuard.buy{value: PRICE}(perm);
+        tokenId = mintGuard.mint{value: PRICE}(perm);
         assertEq(nft.ownerOf(tokenId), buyer3, "New signer should work after update");
     }
 }

@@ -40,7 +40,7 @@ contract BoundarySupplyTest is Test {
             MintGuard.Permission memory perm = MintGuard.Permission({minter: currentBuyer, v: v, r: r, s: s});
 
             vm.prank(currentBuyer);
-            uint256 tokenId = mintGuard.buy{value: PRICE}(perm);
+            uint256 tokenId = mintGuard.mint{value: PRICE}(perm);
             assertEq(tokenId, i, "Token ID should match iteration");
         }
 
@@ -55,6 +55,6 @@ contract BoundarySupplyTest is Test {
 
         vm.prank(nextBuyer);
         vm.expectRevert("Maximum tokens (1024) already minted");
-        mintGuard.buy{value: PRICE}(perm);
+        mintGuard.mint{value: PRICE}(perm);
     }
 }

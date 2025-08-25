@@ -39,7 +39,7 @@ contract InvalidTest is Test {
 
         vm.prank(buyer);
         vm.expectRevert(MintGuard.IncorrectPermission.selector);
-        mintGuard.buy{value: PRICE}(perm);
+        mintGuard.mint{value: PRICE}(perm);
     }
 
     function test_wrong_signer_configured() public {
@@ -58,6 +58,6 @@ contract InvalidTest is Test {
         // Try to use the old signer's signature - should fail
         vm.prank(buyer);
         vm.expectRevert(MintGuard.IncorrectPermission.selector);
-        mintGuard.buy{value: PRICE}(perm);
+        mintGuard.mint{value: PRICE}(perm);
     }
 }

@@ -42,7 +42,7 @@ contract WithdrawTest is Test {
         uint256 mintGuardBalanceBefore = address(mintGuard).balance;
 
         vm.prank(buyer);
-        mintGuard.buy{value: PRICE}(perm);
+        mintGuard.mint{value: PRICE}(perm);
 
         // Verify mintGuard contract has the payment
         assertEq(address(mintGuard).balance, mintGuardBalanceBefore + PRICE, "MintGuard should have received payment");

@@ -43,7 +43,7 @@ contract SuccessTest is Test {
         emit MintGuard.Minted(buyer, 0, PRICE);
 
         vm.prank(buyer);
-        uint256 tokenId = mintGuard.buy{value: PRICE}(perm);
+        uint256 tokenId = mintGuard.mint{value: PRICE}(perm);
 
         assertEq(nft.totalSupply(), 1, "total supply should be 1 after minting");
         assertEq(nft.ownerOf(tokenId), buyer, "owner should be buyer");
