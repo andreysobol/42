@@ -33,7 +33,7 @@ contract BoundarySupplyTest is Test {
         for (uint32 i = 0; i < 1024; i++) {
             address currentBuyer = address(uint160(uint160(buyer) + i)); // Create unique buyer addresses
             vm.deal(currentBuyer, 2 ether); // Fund each buyer
-            
+
             bytes32 digest = keccak256(abi.encodePacked(currentBuyer));
             (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
@@ -47,7 +47,7 @@ contract BoundarySupplyTest is Test {
         // Next buy should fail due to supply cap
         address nextBuyer = address(uint160(uint160(buyer) + 1024));
         vm.deal(nextBuyer, 2 ether);
-        
+
         bytes32 digest = keccak256(abi.encodePacked(nextBuyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
