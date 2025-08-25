@@ -27,7 +27,7 @@ contract UpdateSignerTest is Test {
         newSigner = vm.addr(newSignerPk);
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
-        nft = new NFT42("ipfs://base/", predictedMintGuard);
+        nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
         mintGuard = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");

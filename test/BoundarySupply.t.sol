@@ -21,7 +21,7 @@ contract BoundarySupplyTest is Test {
         permissionSigner = vm.addr(permissionSignerPk);
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
-        nft = new NFT42("ipfs://base/", predictedMintGuard);
+        nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
         mintGuard = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
@@ -41,7 +41,7 @@ contract BoundarySupplyTest is Test {
 
             vm.prank(currentBuyer);
             uint256 tokenId = mintGuard.mint{value: PRICE}(perm);
-            assertEq(tokenId, i, "Token ID should match iteration");
+            assertEq(tokenId, i + 1, "Token ID should match iteration");
         }
 
         // Next buy should fail due to supply cap
@@ -54,7 +54,7 @@ contract BoundarySupplyTest is Test {
         MintGuard.Permission memory perm = MintGuard.Permission({minter: nextBuyer, v: v, r: r, s: s});
 
         vm.prank(nextBuyer);
-        vm.expectRevert("Maximum tokens (1024) already minted");
+        vm.expectRevert("Maximum tokens already minted");
         mintGuard.mint{value: PRICE}(perm);
     }
 }

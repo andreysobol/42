@@ -9,10 +9,12 @@ contract NFT42 is ERC721, ERC721Enumerable {
     string private baseMetadataURI;
     // change name to mintGuard
     address public mintGuard;
+    uint256 public immutable maxTokens;
 
-    constructor(string memory _baseMetadataURI, address _mintGuard) ERC721("Glitch", "GLCH") {
+    constructor(string memory _baseMetadataURI, address _mintGuard, uint256 _maxTokens) ERC721("Glitch", "GLCH") {
         baseMetadataURI = _baseMetadataURI;
         mintGuard = _mintGuard;
+        maxTokens = _maxTokens;
     }
 
     modifier onlyMintGuard() {
@@ -21,9 +23,9 @@ contract NFT42 is ERC721, ERC721Enumerable {
     }
 
     function mint(address to) external onlyMintGuard returns (uint256 tokenId) {
-        require(nextTokenId < 1024, "Maximum tokens (1024) already minted");
-        tokenId = nextTokenId;
         nextTokenId += 1;
+        require(nextTokenId <= maxTokens, "Maximum tokens already minted");
+        tokenId = nextTokenId;
         _safeMint(to, tokenId);
     }
 

@@ -21,7 +21,7 @@ contract EventsTest is Test {
         permissionSigner = vm.addr(permissionSignerPk);
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
-        nft = new NFT42("ipfs://base/", predictedMintGuard);
+        nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
         mintGuard = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
@@ -36,7 +36,7 @@ contract EventsTest is Test {
 
         // Expect Minted event with correct buyer, tokenId, and price
         vm.expectEmit(true, true, false, true);
-        emit MintGuard.Minted(buyer, 0, PRICE);
+        emit MintGuard.Minted(buyer, 1, PRICE);
 
         vm.prank(buyer);
         mintGuard.mint{value: PRICE}(perm);
