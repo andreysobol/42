@@ -14,7 +14,7 @@ contract InvalidTest is Test {
 
     address private buyer;
 
-    uint256 private constant PRICE = 0.01 ether;
+    uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
         permissionSignerPk = 0xA11CE;
@@ -22,7 +22,7 @@ contract InvalidTest is Test {
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, permissionSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 1 ether);
@@ -39,7 +39,7 @@ contract InvalidTest is Test {
 
         vm.prank(buyer);
         vm.expectRevert(MintGuard.InvalidSignature.selector);
-        mintGuard.mint{value: PRICE}(perm);
+        mintGuard.mint{value: FEE}(perm);
     }
 
     function test_wrong_signer_configured() public {
@@ -58,6 +58,6 @@ contract InvalidTest is Test {
         // Try to use the old signer's signature - should fail
         vm.prank(buyer);
         vm.expectRevert(MintGuard.InvalidSignature.selector);
-        mintGuard.mint{value: PRICE}(perm);
+        mintGuard.mint{value: FEE}(perm);
     }
 }

@@ -18,8 +18,8 @@ contract MintGuard is Ownable, ReentrancyGuard {
 
     NFT42 public immutable nft;
 
-    /// @notice Price per NFT in wei.
-    uint256 public price;
+    /// @notice Fee per NFT in wei.
+    uint256 public fee;
 
     /// @notice Address authorized to sign permissions.
     address public permissionSigner;
@@ -28,29 +28,29 @@ contract MintGuard is Ownable, ReentrancyGuard {
     mapping(address => bool) public mint_address;
 
     event Minted(address indexed buyer, uint256 indexed tokenId, uint256 pricePaid);
-    event PriceUpdated(uint256 oldPrice, uint256 newPrice);
+    event FeeUpdated(uint256 oldPrice, uint256 newPrice);
     event PermissionSignerUpdated(address indexed oldSigner, address indexed newSigner);
     event Withdrawn(address indexed to, uint256 amount);
 
-    error InvalidPrice();
+    error InvalidFee();
     error IncorrectPayment(uint256 expected, uint256 actual);
     error ZeroAddress();
     error InvalidSignature();
     error AlreadyMinted();
 
-    constructor(NFT42 _nft, uint256 _price, address _permissionSigner) Ownable(msg.sender) {
+    constructor(NFT42 _nft, uint256 _fee, address _permissionSigner) Ownable(msg.sender) {
         if (address(_nft) == address(0)) revert ZeroAddress();
         if (_permissionSigner == address(0)) revert ZeroAddress();
         nft = _nft;
-        if (_price == 0) revert InvalidPrice();
-        price = _price;
+        if (_fee == 0) revert InvalidFee();
+        fee = _fee;
         permissionSigner = _permissionSigner;
     }
 
     /// @notice Mint one NFT to the `perm.minter` address.
     /// @param perm Permission proving the mint is authorized.
     function mint(Permission calldata perm) external payable nonReentrant returns (uint256 tokenId) {
-        if (msg.value != price) revert IncorrectPayment(price, msg.value);
+        if (msg.value != fee) revert IncorrectPayment(fee, msg.value);
         if (perm.minter == address(0)) revert ZeroAddress();
         verifyPermission(perm);
         if (mint_address[perm.minter]) revert AlreadyMinted();
@@ -80,12 +80,12 @@ contract MintGuard is Ownable, ReentrancyGuard {
         emit PermissionSignerUpdated(old, _newSigner);
     }
 
-    /// @notice Update the price per NFT.
-    function setPrice(uint256 _newPrice) external onlyOwner nonReentrant {
-        if (_newPrice == 0) revert InvalidPrice();
-        uint256 old = price;
-        price = _newPrice;
-        emit PriceUpdated(old, _newPrice);
+    /// @notice Update the fee per NFT.
+    function setFee(uint256 _newFee) external onlyOwner nonReentrant {
+        if (_newFee == 0) revert InvalidFee();
+        uint256 old = fee;
+        fee = _newFee;
+        emit FeeUpdated(old, _newFee);
     }
 
     /// @notice Withdraw full contract balance to the owner.

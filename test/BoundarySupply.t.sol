@@ -14,7 +14,7 @@ contract BoundarySupplyTest is Test {
 
     address private buyer;
 
-    uint256 private constant PRICE = 0.01 ether;
+    uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
         permissionSignerPk = 0xA11CE;
@@ -22,7 +22,7 @@ contract BoundarySupplyTest is Test {
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, permissionSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 2000 ether); // Fund for many purchases
@@ -40,7 +40,7 @@ contract BoundarySupplyTest is Test {
             MintGuard.Permission memory perm = MintGuard.Permission({minter: currentBuyer, v: v, r: r, s: s});
 
             vm.prank(currentBuyer);
-            uint256 tokenId = mintGuard.mint{value: PRICE}(perm);
+            uint256 tokenId = mintGuard.mint{value: FEE}(perm);
             assertEq(tokenId, i + 1, "Token ID should match iteration");
         }
 
@@ -55,6 +55,6 @@ contract BoundarySupplyTest is Test {
 
         vm.prank(nextBuyer);
         vm.expectRevert("Maximum tokens already minted");
-        mintGuard.mint{value: PRICE}(perm);
+        mintGuard.mint{value: FEE}(perm);
     }
 }

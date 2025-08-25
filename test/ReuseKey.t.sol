@@ -14,7 +14,7 @@ contract ReuseAddressTest is Test {
 
     address private buyer;
 
-    uint256 private constant PRICE = 0.01 ether;
+    uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
         permissionSignerPk = 0xA11CE;
@@ -22,7 +22,7 @@ contract ReuseAddressTest is Test {
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, permissionSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 2 ether); // Fund for two purchases
@@ -36,13 +36,13 @@ contract ReuseAddressTest is Test {
 
         // First buy should succeed
         vm.prank(buyer);
-        uint256 tokenId = mintGuard.mint{value: PRICE}(perm);
+        uint256 tokenId = mintGuard.mint{value: FEE}(perm);
         assertEq(nft.ownerOf(tokenId), buyer, "First buy: owner should be buyer");
         assertTrue(mintGuard.mint_address(buyer), "First buy: address should be marked as minted");
 
         // Second buy with same address should fail
         vm.prank(buyer);
         vm.expectRevert(MintGuard.AlreadyMinted.selector);
-        mintGuard.mint{value: PRICE}(perm);
+        mintGuard.mint{value: FEE}(perm);
     }
 }

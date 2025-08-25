@@ -17,7 +17,7 @@ contract UpdateSignerTest is Test {
 
     address private buyer;
 
-    uint256 private constant PRICE = 0.01 ether;
+    uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
         permissionSignerPk = 0xA11CE;
@@ -28,7 +28,7 @@ contract UpdateSignerTest is Test {
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, permissionSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 2 ether);
@@ -43,7 +43,7 @@ contract UpdateSignerTest is Test {
 
         // Old signer should work before update
         vm.prank(buyer);
-        uint256 tokenId = mintGuard.mint{value: PRICE}(perm);
+        uint256 tokenId = mintGuard.mint{value: FEE}(perm);
         assertEq(nft.ownerOf(tokenId), buyer, "Old signer should work before update");
 
         // Update permission signer
@@ -60,7 +60,7 @@ contract UpdateSignerTest is Test {
 
         vm.prank(buyer2);
         vm.expectRevert(MintGuard.InvalidSignature.selector);
-        mintGuard.mint{value: PRICE}(perm);
+        mintGuard.mint{value: FEE}(perm);
 
         // New signer should work after update
         address buyer3 = address(uint160(uint160(buyer) + 2));
@@ -71,7 +71,7 @@ contract UpdateSignerTest is Test {
         perm = MintGuard.Permission({minter: buyer3, v: v, r: r, s: s});
 
         vm.prank(buyer3);
-        tokenId = mintGuard.mint{value: PRICE}(perm);
+        tokenId = mintGuard.mint{value: FEE}(perm);
         assertEq(nft.ownerOf(tokenId), buyer3, "New signer should work after update");
     }
 }

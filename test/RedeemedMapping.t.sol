@@ -16,7 +16,7 @@ contract MintAddressMappingTest is Test {
     address private buyer2;
     address private buyer3;
 
-    uint256 private constant PRICE = 0.01 ether;
+    uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
         permissionSignerPk = 0xA11CE;
@@ -24,7 +24,7 @@ contract MintAddressMappingTest is Test {
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, permissionSigner);
 
         buyer1 = makeAddr("buyer1");
         buyer2 = makeAddr("buyer2");
@@ -44,7 +44,7 @@ contract MintAddressMappingTest is Test {
         MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer1, v: v, r: r, s: s});
 
         vm.prank(buyer1);
-        mintGuard.mint{value: PRICE}(perm);
+        mintGuard.mint{value: FEE}(perm);
 
         // Check that address is minted after purchase
         assertTrue(mintGuard.mint_address(buyer1), "Address should be minted after purchase");
@@ -63,7 +63,7 @@ contract MintAddressMappingTest is Test {
         MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer1, v: v, r: r, s: s});
 
         vm.prank(buyer1);
-        mintGuard.mint{value: PRICE}(perm);
+        mintGuard.mint{value: FEE}(perm);
 
         // Check only buyer1 is minted
         assertTrue(mintGuard.mint_address(buyer1), "Buyer1 should be minted after purchase");
@@ -77,7 +77,7 @@ contract MintAddressMappingTest is Test {
         perm = MintGuard.Permission({minter: buyer2, v: v, r: r, s: s});
 
         vm.prank(buyer2);
-        mintGuard.mint{value: PRICE}(perm);
+        mintGuard.mint{value: FEE}(perm);
 
         // Check buyer1 and buyer2 are minted, buyer3 is not
         assertTrue(mintGuard.mint_address(buyer1), "Buyer1 should still be minted");

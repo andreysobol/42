@@ -16,7 +16,7 @@ contract WithdrawTest is Test {
     address private buyer;
     address private owner;
 
-    uint256 private constant PRICE = 0.01 ether;
+    uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
         permissionSignerPk = 0xA11CE;
@@ -24,7 +24,7 @@ contract WithdrawTest is Test {
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, permissionSigner);
 
         buyer = makeAddr("buyer");
         owner = makeAddr("owner");
@@ -43,16 +43,16 @@ contract WithdrawTest is Test {
         uint256 mintGuardBalanceBefore = address(mintGuard).balance;
 
         vm.prank(buyer);
-        mintGuard.mint{value: PRICE}(perm);
+        mintGuard.mint{value: FEE}(perm);
 
         // Verify mintGuard contract has the payment
-        assertEq(address(mintGuard).balance, mintGuardBalanceBefore + PRICE, "MintGuard should have received payment");
+        assertEq(address(mintGuard).balance, mintGuardBalanceBefore + FEE, "MintGuard should have received payment");
 
         // Owner withdraws (test contract is the owner)
         mintGuard.withdraw();
 
         // Verify balance transferred to owner
-        assertEq(address(this).balance, testContractBalanceBefore + PRICE, "Test contract should receive payment");
+        assertEq(address(this).balance, testContractBalanceBefore + FEE, "Test contract should receive payment");
         assertEq(address(mintGuard).balance, 0, "MintGuard balance should be zero");
     }
 

@@ -15,7 +15,7 @@ contract SuccessTest is Test {
     address private buyer;
     address private receiver;
 
-    uint256 private constant PRICE = 0.01 ether;
+    uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
         permissionSignerPk = 0xA11CE;
@@ -23,7 +23,7 @@ contract SuccessTest is Test {
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, permissionSigner);
 
         buyer = makeAddr("buyer");
         receiver = makeAddr("receiver");
@@ -38,12 +38,12 @@ contract SuccessTest is Test {
 
         assertEq(nft.totalSupply(), 0, "total supply should be 0 before minting");
 
-        // Expect Minted event; check buyer (topic1) and data (price), ignore tokenId
+        // Expect Minted event; check buyer (topic1) and data (fee), ignore tokenId
         vm.expectEmit(true, false, false, true);
-        emit MintGuard.Minted(buyer, 0, PRICE);
+        emit MintGuard.Minted(buyer, 1, FEE);
 
         vm.prank(buyer);
-        uint256 tokenId = mintGuard.mint{value: PRICE}(perm);
+        uint256 tokenId = mintGuard.mint{value: FEE}(perm);
 
         assertEq(nft.totalSupply(), 1, "total supply should be 1 after minting");
         assertEq(nft.ownerOf(tokenId), buyer, "owner should be buyer");

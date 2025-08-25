@@ -14,7 +14,7 @@ contract EventsTest is Test {
 
     address private buyer;
 
-    uint256 private constant PRICE = 0.01 ether;
+    uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
         permissionSignerPk = 0xA11CE;
@@ -22,7 +22,7 @@ contract EventsTest is Test {
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, permissionSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 2 ether);
@@ -36,19 +36,19 @@ contract EventsTest is Test {
 
         // Expect Minted event with correct buyer, tokenId, and price
         vm.expectEmit(true, true, false, true);
-        emit MintGuard.Minted(buyer, 1, PRICE);
+        emit MintGuard.Minted(buyer, 1, FEE);
 
         vm.prank(buyer);
-        mintGuard.mint{value: PRICE}(perm);
+        mintGuard.mint{value: FEE}(perm);
     }
 
-    function test_price_updated_event() public {
-        uint256 newPrice = 0.02 ether;
+    function test_fee_updated_event() public {
+        uint256 newFee = 0.02 ether;
 
         vm.expectEmit(false, false, false, true);
-        emit MintGuard.PriceUpdated(PRICE, newPrice);
+        emit MintGuard.FeeUpdated(FEE, newFee);
 
-        mintGuard.setPrice(newPrice);
+        mintGuard.setFee(newFee);
     }
 
     function test_permission_signer_updated_event() public {
