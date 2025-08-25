@@ -61,8 +61,8 @@ contract MintGuard {
         if (perm.minter == address(0)) revert ZeroAddress();
         verifyPermission(perm);
         if (mint_address[perm.minter]) revert AlreadyMinted();
-        tokenId = nft.mint(perm.minter);
         mint_address[perm.minter] = true;
+        tokenId = nft.mint(perm.minter);
         emit Minted(msg.sender, tokenId, msg.value);
     }
 
