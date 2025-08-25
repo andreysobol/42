@@ -7,7 +7,7 @@ import {MintGuard} from "../src/MintGuard.sol";
 
 contract OnlyMintGuardMintTest is Test {
     NFT42 private nft;
-    MintGuard private sale;
+    MintGuard private mintGuard;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -21,13 +21,13 @@ contract OnlyMintGuardMintTest is Test {
         permissionSignerPk = 0xA11CE;
         permissionSigner = vm.addr(permissionSignerPk);
 
-        address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
-        nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new MintGuard(nft, PRICE, permissionSigner);
+        address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
+        nft = new NFT42("ipfs://base/", predictedMintGuard);
+        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         nonMintGuardAddress = makeAddr("nonMintGuardAddress");
-        vm.deal(buyer, 1 ether);
+        vm.deal(buyer, 2 ether);
     }
 
     function test_only_mint_guard_can_mint() public {
@@ -38,8 +38,8 @@ contract OnlyMintGuardMintTest is Test {
     }
 
     function test_mint_guard_can_mint() public {
-        // Sale (mintGuard) should be able to mint
-        vm.prank(address(sale));
+        // MintGuard should be able to mint
+        vm.prank(address(mintGuard));
         uint256 tokenId = nft.mint(buyer);
         assertEq(nft.ownerOf(tokenId), buyer, "Owner should be buyer");
     }

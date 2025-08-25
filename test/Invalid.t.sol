@@ -7,7 +7,7 @@ import {MintGuard} from "../src/MintGuard.sol";
 
 contract InvalidTest is Test {
     NFT42 private nft;
-    MintGuard private sale;
+    MintGuard private mintGuard;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -20,9 +20,9 @@ contract InvalidTest is Test {
         permissionSignerPk = 0xA11CE;
         permissionSigner = vm.addr(permissionSignerPk);
 
-        address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
-        nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new MintGuard(nft, PRICE, permissionSigner);
+        address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
+        nft = new NFT42("ipfs://base/", predictedMintGuard);
+        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 1 ether);
@@ -39,7 +39,7 @@ contract InvalidTest is Test {
 
         vm.prank(buyer);
         vm.expectRevert(MintGuard.IncorrectPermission.selector);
-        sale.buy{value: PRICE}(perm);
+        mintGuard.buy{value: PRICE}(perm);
     }
 
     function test_wrong_signer_configured() public {
@@ -53,11 +53,11 @@ contract InvalidTest is Test {
         // Change the permission signer to a new one
         address newSigner = makeAddr("newSigner");
         vm.prank(address(this));
-        sale.setPermissionSigner(newSigner);
+        mintGuard.setPermissionSigner(newSigner);
 
         // Try to use the old signer's signature - should fail
         vm.prank(buyer);
         vm.expectRevert(MintGuard.IncorrectPermission.selector);
-        sale.buy{value: PRICE}(perm);
+        mintGuard.buy{value: PRICE}(perm);
     }
 }

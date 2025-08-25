@@ -7,7 +7,7 @@ import {MintGuard} from "../src/MintGuard.sol";
 
 contract PriceMismatchTest is Test {
     NFT42 private nft;
-    MintGuard private sale;
+    MintGuard private mintGuard;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -20,9 +20,9 @@ contract PriceMismatchTest is Test {
         permissionSignerPk = 0xA11CE;
         permissionSigner = vm.addr(permissionSignerPk);
 
-        address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
-        nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new MintGuard(nft, PRICE, permissionSigner);
+        address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
+        nft = new NFT42("ipfs://base/", predictedMintGuard);
+        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 1 ether);
@@ -36,7 +36,7 @@ contract PriceMismatchTest is Test {
 
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(MintGuard.IncorrectPayment.selector, PRICE, PRICE - 0.001 ether));
-        sale.buy{value: PRICE - 0.001 ether}(perm);
+        mintGuard.buy{value: PRICE - 0.001 ether}(perm);
     }
 
     function test_price_mismatch_send_more() public {
@@ -47,6 +47,6 @@ contract PriceMismatchTest is Test {
 
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(MintGuard.IncorrectPayment.selector, PRICE, PRICE + 0.001 ether));
-        sale.buy{value: PRICE + 0.001 ether}(perm);
+        mintGuard.buy{value: PRICE + 0.001 ether}(perm);
     }
 }

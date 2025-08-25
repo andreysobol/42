@@ -7,7 +7,7 @@ import {MintGuard} from "../src/MintGuard.sol";
 
 contract WithdrawTest is Test {
     NFT42 private nft;
-    MintGuard private sale;
+    MintGuard private mintGuard;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -21,9 +21,9 @@ contract WithdrawTest is Test {
         permissionSignerPk = 0xA11CE;
         permissionSigner = vm.addr(permissionSignerPk);
 
-        address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
-        nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new MintGuard(nft, PRICE, permissionSigner);
+        address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
+        nft = new NFT42("ipfs://base/", predictedMintGuard);
+        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         owner = makeAddr("owner");
@@ -32,27 +32,27 @@ contract WithdrawTest is Test {
     }
 
     function test_withdraw_after_purchases() public {
-        // Make a purchase to add balance to sale contract
+        // Make a purchase to add balance to mintGuard contract
         bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
         MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
 
         uint256 testContractBalanceBefore = address(this).balance;
-        uint256 saleBalanceBefore = address(sale).balance;
+        uint256 mintGuardBalanceBefore = address(mintGuard).balance;
 
         vm.prank(buyer);
-        sale.buy{value: PRICE}(perm);
+        mintGuard.buy{value: PRICE}(perm);
 
-        // Verify sale contract has the payment
-        assertEq(address(sale).balance, saleBalanceBefore + PRICE, "Sale should have received payment");
+        // Verify mintGuard contract has the payment
+        assertEq(address(mintGuard).balance, mintGuardBalanceBefore + PRICE, "MintGuard should have received payment");
 
         // Owner withdraws (test contract is the owner)
-        sale.withdraw();
+        mintGuard.withdraw();
 
         // Verify balance transferred to owner
         assertEq(address(this).balance, testContractBalanceBefore + PRICE, "Test contract should receive payment");
-        assertEq(address(sale).balance, 0, "Sale balance should be zero");
+        assertEq(address(mintGuard).balance, 0, "MintGuard balance should be zero");
     }
 
     function test_non_owner_cannot_withdraw() public {
@@ -60,7 +60,7 @@ contract WithdrawTest is Test {
 
         vm.prank(nonOwner);
         vm.expectRevert(MintGuard.NotOwner.selector);
-        sale.withdraw();
+        mintGuard.withdraw();
     }
 
     // Allow test contract to receive ETH

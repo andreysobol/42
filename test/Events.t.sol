@@ -7,7 +7,7 @@ import {MintGuard} from "../src/MintGuard.sol";
 
 contract EventsTest is Test {
     NFT42 private nft;
-    MintGuard private sale;
+    MintGuard private mintGuard;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -20,9 +20,9 @@ contract EventsTest is Test {
         permissionSignerPk = 0xA11CE;
         permissionSigner = vm.addr(permissionSignerPk);
 
-        address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
-        nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new MintGuard(nft, PRICE, permissionSigner);
+        address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
+        nft = new NFT42("ipfs://base/", predictedMintGuard);
+        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 2 ether);
@@ -39,7 +39,7 @@ contract EventsTest is Test {
         emit MintGuard.Minted(buyer, 0, PRICE);
 
         vm.prank(buyer);
-        sale.buy{value: PRICE}(perm);
+        mintGuard.buy{value: PRICE}(perm);
     }
 
     function test_price_updated_event() public {
@@ -48,7 +48,7 @@ contract EventsTest is Test {
         vm.expectEmit(false, false, false, true);
         emit MintGuard.PriceUpdated(PRICE, newPrice);
 
-        sale.setPrice(newPrice);
+        mintGuard.setPrice(newPrice);
     }
 
     function test_permission_signer_updated_event() public {
@@ -57,6 +57,6 @@ contract EventsTest is Test {
         vm.expectEmit(true, true, false, false);
         emit MintGuard.PermissionSignerUpdated(permissionSigner, newSigner);
 
-        sale.setPermissionSigner(newSigner);
+        mintGuard.setPermissionSigner(newSigner);
     }
 }

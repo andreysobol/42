@@ -7,7 +7,7 @@ import {MintGuard} from "../src/MintGuard.sol";
 
 contract UpdateSignerTest is Test {
     NFT42 private nft;
-    MintGuard private sale;
+    MintGuard private mintGuard;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -26,9 +26,9 @@ contract UpdateSignerTest is Test {
         newSignerPk = 0xB0B;
         newSigner = vm.addr(newSignerPk);
 
-        address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
-        nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new MintGuard(nft, PRICE, permissionSigner);
+        address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
+        nft = new NFT42("ipfs://base/", predictedMintGuard);
+        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 2 ether);
@@ -43,12 +43,12 @@ contract UpdateSignerTest is Test {
 
         // Old signer should work before update
         vm.prank(buyer);
-        uint256 tokenId = sale.buy{value: PRICE}(perm);
+        uint256 tokenId = mintGuard.buy{value: PRICE}(perm);
         assertEq(nft.ownerOf(tokenId), buyer, "Old signer should work before update");
 
         // Update permission signer
         vm.prank(address(this));
-        sale.setPermissionSigner(newSigner);
+        mintGuard.setPermissionSigner(newSigner);
 
         // Old signer should not work after update
         address buyer2 = address(uint160(uint160(buyer) + 1));
@@ -60,7 +60,7 @@ contract UpdateSignerTest is Test {
 
         vm.prank(buyer2);
         vm.expectRevert(MintGuard.IncorrectPermission.selector);
-        sale.buy{value: PRICE}(perm);
+        mintGuard.buy{value: PRICE}(perm);
 
         // New signer should work after update
         address buyer3 = address(uint160(uint160(buyer) + 2));
@@ -71,7 +71,7 @@ contract UpdateSignerTest is Test {
         perm = MintGuard.Permission({minter: buyer3, v: v, r: r, s: s});
 
         vm.prank(buyer3);
-        tokenId = sale.buy{value: PRICE}(perm);
+        tokenId = mintGuard.buy{value: PRICE}(perm);
         assertEq(nft.ownerOf(tokenId), buyer3, "New signer should work after update");
     }
 }

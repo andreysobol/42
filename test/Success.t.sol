@@ -7,7 +7,7 @@ import {MintGuard} from "../src/MintGuard.sol";
 
 contract SuccessTest is Test {
     NFT42 private nft;
-    MintGuard private sale;
+    MintGuard private mintGuard;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -21,9 +21,9 @@ contract SuccessTest is Test {
         permissionSignerPk = 0xA11CE;
         permissionSigner = vm.addr(permissionSignerPk);
 
-        address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
-        nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new MintGuard(nft, PRICE, permissionSigner);
+        address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
+        nft = new NFT42("ipfs://base/", predictedMintGuard);
+        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         receiver = makeAddr("receiver");
@@ -43,7 +43,7 @@ contract SuccessTest is Test {
         emit MintGuard.Minted(buyer, 0, PRICE);
 
         vm.prank(buyer);
-        uint256 tokenId = sale.buy{value: PRICE}(perm);
+        uint256 tokenId = mintGuard.buy{value: PRICE}(perm);
 
         assertEq(nft.totalSupply(), 1, "total supply should be 1 after minting");
         assertEq(nft.ownerOf(tokenId), buyer, "owner should be buyer");

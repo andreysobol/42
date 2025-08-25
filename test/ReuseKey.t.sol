@@ -7,7 +7,7 @@ import {MintGuard} from "../src/MintGuard.sol";
 
 contract ReuseAddressTest is Test {
     NFT42 private nft;
-    MintGuard private sale;
+    MintGuard private mintGuard;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -20,9 +20,9 @@ contract ReuseAddressTest is Test {
         permissionSignerPk = 0xA11CE;
         permissionSigner = vm.addr(permissionSignerPk);
 
-        address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
-        nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new MintGuard(nft, PRICE, permissionSigner);
+        address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
+        nft = new NFT42("ipfs://base/", predictedMintGuard);
+        mintGuard = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 2 ether); // Fund for two purchases
@@ -36,13 +36,13 @@ contract ReuseAddressTest is Test {
 
         // First buy should succeed
         vm.prank(buyer);
-        uint256 tokenId = sale.buy{value: PRICE}(perm);
+        uint256 tokenId = mintGuard.buy{value: PRICE}(perm);
         assertEq(nft.ownerOf(tokenId), buyer, "First buy: owner should be buyer");
-        assertTrue(sale.mint_address(buyer), "First buy: address should be marked as minted");
+        assertTrue(mintGuard.mint_address(buyer), "First buy: address should be marked as minted");
 
         // Second buy with same address should fail
         vm.prank(buyer);
         vm.expectRevert(MintGuard.AlreadyMinted.selector);
-        sale.buy{value: PRICE}(perm);
+        mintGuard.buy{value: PRICE}(perm);
     }
 }
