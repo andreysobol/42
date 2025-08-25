@@ -9,20 +9,20 @@ contract EventsTest is Test {
     NFT42 private nft;
     MintGuard private mintGuard;
 
-    address private permissionSigner;
-    uint256 private permissionSignerPk;
+    address private voucherSigner;
+    uint256 private voucherSignerPk;
 
     address private buyer;
 
     uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
-        permissionSignerPk = 0xA11CE;
-        permissionSigner = vm.addr(permissionSignerPk);
+        voucherSignerPk = 0xA11CE;
+        voucherSigner = vm.addr(voucherSignerPk);
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, FEE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, voucherSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 2 ether);
@@ -30,16 +30,16 @@ contract EventsTest is Test {
 
     function test_minted_event_logs_correct_data() public {
         bytes32 digest = keccak256(abi.encodePacked(buyer));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(voucherSignerPk, digest);
 
-        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
+        MintGuard.Voucher memory voucher = MintGuard.Voucher({minter: buyer, v: v, r: r, s: s});
 
-        // Expect Minted event with correct buyer, tokenId, and price
+        // Expect Minted event with correct buyer, tokenId, and fee
         vm.expectEmit(true, true, false, true);
         emit MintGuard.Minted(buyer, 1, FEE);
 
         vm.prank(buyer);
-        mintGuard.mint{value: FEE}(perm);
+        mintGuard.mint{value: FEE}(voucher);
     }
 
     function test_fee_updated_event() public {
@@ -51,12 +51,12 @@ contract EventsTest is Test {
         mintGuard.setFee(newFee);
     }
 
-    function test_permission_signer_updated_event() public {
+    function test_voucher_signer_updated_event() public {
         address newSigner = makeAddr("newSigner");
 
         vm.expectEmit(true, true, false, false);
-        emit MintGuard.PermissionSignerUpdated(permissionSigner, newSigner);
+        emit MintGuard.VoucherSignerUpdated(voucherSigner, newSigner);
 
-        mintGuard.setPermissionSigner(newSigner);
+        mintGuard.setVoucherSigner(newSigner);
     }
 }

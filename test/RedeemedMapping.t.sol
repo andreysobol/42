@@ -9,8 +9,8 @@ contract MintAddressMappingTest is Test {
     NFT42 private nft;
     MintGuard private mintGuard;
 
-    address private permissionSigner;
-    uint256 private permissionSignerPk;
+    address private voucherSigner;
+    uint256 private voucherSignerPk;
 
     address private buyer1;
     address private buyer2;
@@ -19,12 +19,12 @@ contract MintAddressMappingTest is Test {
     uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
-        permissionSignerPk = 0xA11CE;
-        permissionSigner = vm.addr(permissionSignerPk);
+        voucherSignerPk = 0xA11CE;
+        voucherSigner = vm.addr(voucherSignerPk);
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, FEE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, voucherSigner);
 
         buyer1 = makeAddr("buyer1");
         buyer2 = makeAddr("buyer2");
@@ -39,12 +39,12 @@ contract MintAddressMappingTest is Test {
         assertFalse(mintGuard.mint_address(buyer1), "Address should not be minted before purchase");
 
         bytes32 digest = keccak256(abi.encodePacked(buyer1));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(voucherSignerPk, digest);
 
-        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer1, v: v, r: r, s: s});
+        MintGuard.Voucher memory voucher = MintGuard.Voucher({minter: buyer1, v: v, r: r, s: s});
 
         vm.prank(buyer1);
-        mintGuard.mint{value: FEE}(perm);
+        mintGuard.mint{value: FEE}(voucher);
 
         // Check that address is minted after purchase
         assertTrue(mintGuard.mint_address(buyer1), "Address should be minted after purchase");
@@ -58,12 +58,13 @@ contract MintAddressMappingTest is Test {
 
         // Purchase with buyer1
         bytes32 digest = keccak256(abi.encodePacked(buyer1));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(voucherSignerPk, digest);
 
-        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer1, v: v, r: r, s: s});
+        MintGuard.Voucher memory voucher;
+        voucher = MintGuard.Voucher({minter: buyer1, v: v, r: r, s: s});
 
         vm.prank(buyer1);
-        mintGuard.mint{value: FEE}(perm);
+        mintGuard.mint{value: FEE}(voucher);
 
         // Check only buyer1 is minted
         assertTrue(mintGuard.mint_address(buyer1), "Buyer1 should be minted after purchase");
@@ -72,12 +73,12 @@ contract MintAddressMappingTest is Test {
 
         // Purchase with buyer2
         digest = keccak256(abi.encodePacked(buyer2));
-        (v, r, s) = vm.sign(permissionSignerPk, digest);
+        (v, r, s) = vm.sign(voucherSignerPk, digest);
 
-        perm = MintGuard.Permission({minter: buyer2, v: v, r: r, s: s});
+        voucher = MintGuard.Voucher({minter: buyer2, v: v, r: r, s: s});
 
         vm.prank(buyer2);
-        mintGuard.mint{value: FEE}(perm);
+        mintGuard.mint{value: FEE}(voucher);
 
         // Check buyer1 and buyer2 are minted, buyer3 is not
         assertTrue(mintGuard.mint_address(buyer1), "Buyer1 should still be minted");

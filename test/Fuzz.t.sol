@@ -9,20 +9,20 @@ contract FuzzTest is Test {
     NFT42 private nft;
     MintGuard private mintGuard;
 
-    address private permissionSigner;
-    uint256 private permissionSignerPk;
+    address private voucherSigner;
+    uint256 private voucherSignerPk;
 
     address private buyer;
 
     uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
-        permissionSignerPk = 0xA11CE;
-        permissionSigner = vm.addr(permissionSignerPk);
+        voucherSignerPk = 0xA11CE;
+        voucherSigner = vm.addr(voucherSignerPk);
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, FEE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, voucherSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 1000 ether); // Fund for many purchases
@@ -34,16 +34,16 @@ contract FuzzTest is Test {
         vm.assume(minter.code.length == 0); // Skip contract addresses
 
         bytes32 digest = keccak256(abi.encodePacked(minter));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(voucherSignerPk, digest);
 
-        MintGuard.Permission memory perm = MintGuard.Permission({minter: minter, v: v, r: r, s: s});
+        MintGuard.Voucher memory voucher = MintGuard.Voucher({minter: minter, v: v, r: r, s: s});
 
         // Fund the minter
         vm.deal(minter, FEE);
 
         // First purchase should succeed
         vm.prank(minter);
-        uint256 tokenId = mintGuard.mint{value: FEE}(perm);
+        uint256 tokenId = mintGuard.mint{value: FEE}(voucher);
         assertEq(nft.ownerOf(tokenId), minter, "Owner should be minter");
         assertTrue(mintGuard.mint_address(minter), "Address should be marked as minted");
 
@@ -51,7 +51,7 @@ contract FuzzTest is Test {
         vm.deal(minter, FEE);
         vm.prank(minter);
         vm.expectRevert(MintGuard.AlreadyMinted.selector);
-        mintGuard.mint{value: FEE}(perm);
+        mintGuard.mint{value: FEE}(voucher);
     }
 
     function testFuzz_multiple_random_addresses(address[5] memory minters) public {
@@ -64,16 +64,16 @@ contract FuzzTest is Test {
             if (mintGuard.mint_address(minter)) continue;
 
             bytes32 digest = keccak256(abi.encodePacked(minter));
-            (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
+            (uint8 v, bytes32 r, bytes32 s) = vm.sign(voucherSignerPk, digest);
 
-            MintGuard.Permission memory perm = MintGuard.Permission({minter: minter, v: v, r: r, s: s});
+            MintGuard.Voucher memory voucher = MintGuard.Voucher({minter: minter, v: v, r: r, s: s});
 
             // Fund the minter
             vm.deal(minter, FEE);
 
             // Purchase should succeed for unique addresses
             vm.prank(minter);
-            uint256 tokenId = mintGuard.mint{value: FEE}(perm);
+            uint256 tokenId = mintGuard.mint{value: FEE}(voucher);
             assertEq(nft.ownerOf(tokenId), minter, "Owner should be minter");
             assertTrue(mintGuard.mint_address(minter), "Address should be marked as minted");
         }
@@ -84,13 +84,13 @@ contract FuzzTest is Test {
         vm.assume(minter.code.length == 0); // Skip contract addresses
 
         bytes32 digest = keccak256(abi.encodePacked(minter));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(voucherSignerPk, digest);
 
-        MintGuard.Permission memory perm = MintGuard.Permission({minter: minter, v: v, r: r, s: s});
+        MintGuard.Voucher memory voucher = MintGuard.Voucher({minter: minter, v: v, r: r, s: s});
 
         vm.deal(minter, FEE);
         vm.prank(minter);
-        uint256 tokenId = mintGuard.mint{value: FEE}(perm);
+        uint256 tokenId = mintGuard.mint{value: FEE}(voucher);
         assertEq(nft.ownerOf(tokenId), minter, "Owner should be minter");
         assertTrue(mintGuard.mint_address(minter), "Address should be marked as minted");
     }

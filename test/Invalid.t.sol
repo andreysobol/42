@@ -9,20 +9,20 @@ contract InvalidTest is Test {
     NFT42 private nft;
     MintGuard private mintGuard;
 
-    address private permissionSigner;
-    uint256 private permissionSignerPk;
+    address private voucherSigner;
+    uint256 private voucherSignerPk;
 
     address private buyer;
 
     uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
-        permissionSignerPk = 0xA11CE;
-        permissionSigner = vm.addr(permissionSignerPk);
+        voucherSignerPk = 0xA11CE;
+        voucherSigner = vm.addr(voucherSignerPk);
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, FEE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, voucherSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 1 ether);
@@ -35,29 +35,29 @@ contract InvalidTest is Test {
         uint256 wrongPk = 0xB0B;
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(wrongPk, digest);
 
-        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
+        MintGuard.Voucher memory voucher = MintGuard.Voucher({minter: buyer, v: v, r: r, s: s});
 
         vm.prank(buyer);
         vm.expectRevert(MintGuard.InvalidSignature.selector);
-        mintGuard.mint{value: FEE}(perm);
+        mintGuard.mint{value: FEE}(voucher);
     }
 
     function test_wrong_signer_configured() public {
         bytes32 digest = keccak256(abi.encodePacked(buyer));
 
         // Sign with the original permission signer
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(voucherSignerPk, digest);
 
-        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
+        MintGuard.Voucher memory voucher = MintGuard.Voucher({minter: buyer, v: v, r: r, s: s});
 
         // Change the permission signer to a new one
         address newSigner = makeAddr("newSigner");
         vm.prank(address(this));
-        mintGuard.setPermissionSigner(newSigner);
+        mintGuard.setVoucherSigner(newSigner);
 
         // Try to use the old signer's signature - should fail
         vm.prank(buyer);
         vm.expectRevert(MintGuard.InvalidSignature.selector);
-        mintGuard.mint{value: FEE}(perm);
+        mintGuard.mint{value: FEE}(voucher);
     }
 }

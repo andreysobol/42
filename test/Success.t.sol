@@ -9,8 +9,8 @@ contract SuccessTest is Test {
     NFT42 private nft;
     MintGuard private mintGuard;
 
-    address private permissionSigner;
-    uint256 private permissionSignerPk;
+    address private voucherSigner;
+    uint256 private voucherSignerPk;
 
     address private buyer;
     address private receiver;
@@ -18,12 +18,12 @@ contract SuccessTest is Test {
     uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
-        permissionSignerPk = 0xA11CE;
-        permissionSigner = vm.addr(permissionSignerPk);
+        voucherSignerPk = 0xA11CE;
+        voucherSigner = vm.addr(voucherSignerPk);
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, FEE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, voucherSigner);
 
         buyer = makeAddr("buyer");
         receiver = makeAddr("receiver");
@@ -32,9 +32,9 @@ contract SuccessTest is Test {
 
     function test_successful_buy_and_transfer() public {
         bytes32 digest = keccak256(abi.encodePacked(buyer));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(voucherSignerPk, digest);
 
-        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
+        MintGuard.Voucher memory voucher = MintGuard.Voucher({minter: buyer, v: v, r: r, s: s});
 
         assertEq(nft.totalSupply(), 0, "total supply should be 0 before minting");
 
@@ -43,7 +43,7 @@ contract SuccessTest is Test {
         emit MintGuard.Minted(buyer, 1, FEE);
 
         vm.prank(buyer);
-        uint256 tokenId = mintGuard.mint{value: FEE}(perm);
+        uint256 tokenId = mintGuard.mint{value: FEE}(voucher);
 
         assertEq(nft.totalSupply(), 1, "total supply should be 1 after minting");
         assertEq(nft.ownerOf(tokenId), buyer, "owner should be buyer");

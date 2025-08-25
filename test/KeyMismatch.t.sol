@@ -9,8 +9,8 @@ contract MinterMismatchTest is Test {
     NFT42 private nft;
     MintGuard private mintGuard;
 
-    address private permissionSigner;
-    uint256 private permissionSignerPk;
+    address private voucherSigner;
+    uint256 private voucherSignerPk;
 
     address private buyer1;
     address private buyer2;
@@ -18,12 +18,12 @@ contract MinterMismatchTest is Test {
     uint256 private constant FEE = 0.01 ether;
 
     function setUp() public {
-        permissionSignerPk = 0xA11CE;
-        permissionSigner = vm.addr(permissionSignerPk);
+        voucherSignerPk = 0xA11CE;
+        voucherSigner = vm.addr(voucherSignerPk);
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, FEE, permissionSigner);
+        mintGuard = new MintGuard(nft, FEE, voucherSigner);
 
         buyer1 = makeAddr("buyer1");
         buyer2 = makeAddr("buyer2");
@@ -34,9 +34,9 @@ contract MinterMismatchTest is Test {
     function test_signature_over_different_minter() public {
         // Sign for buyer1 but try to use buyer2
         bytes32 digest = keccak256(abi.encodePacked(buyer1));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
+        (uint8 v, bytes32 r, bytes32 s) = vm.sign(voucherSignerPk, digest);
 
-        MintGuard.Permission memory perm = MintGuard.Permission({
+        MintGuard.Voucher memory voucher = MintGuard.Voucher({
             minter: buyer2, // Different from what was signed (buyer1)
             v: v,
             r: r,
@@ -45,6 +45,6 @@ contract MinterMismatchTest is Test {
 
         vm.prank(buyer2);
         vm.expectRevert(MintGuard.InvalidSignature.selector);
-        mintGuard.mint{value: FEE}(perm);
+        mintGuard.mint{value: FEE}(voucher);
     }
 }
