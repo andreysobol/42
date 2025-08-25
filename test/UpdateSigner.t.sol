@@ -39,7 +39,8 @@ contract UpdateSignerTest is Test {
         bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(voucherSignerPk, digest);
 
-        MintGuard.Voucher memory voucher = MintGuard.Voucher({minter: buyer, v: v, r: r, s: s});
+        MintGuard.Voucher memory voucher;
+        voucher = MintGuard.Voucher({minter: buyer, v: v, r: r, s: s});
 
         // Old signer should work before update
         vm.prank(buyer);

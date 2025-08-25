@@ -48,13 +48,13 @@ contract BoundarySupplyTest is Test {
         address nextBuyer = address(uint160(uint160(buyer) + 1024));
         vm.deal(nextBuyer, 2 ether);
 
-        bytes32 digest = keccak256(abi.encodePacked(nextBuyer));
-        (uint8 v, bytes32 r, bytes32 s) = vm.sign(voucherSignerPk, digest);
+        bytes32 nextDigest = keccak256(abi.encodePacked(nextBuyer));
+        (uint8 nextV, bytes32 nextR, bytes32 nextS) = vm.sign(voucherSignerPk, nextDigest);
 
-        MintGuard.Voucher memory voucher = MintGuard.Voucher({minter: nextBuyer, v: v, r: r, s: s});
+        MintGuard.Voucher memory nextVoucher = MintGuard.Voucher({minter: nextBuyer, v: nextV, r: nextR, s: nextS});
 
         vm.prank(nextBuyer);
         vm.expectRevert("Maximum tokens already minted");
-        mintGuard.mint{value: FEE}(voucher);
+        mintGuard.mint{value: FEE}(nextVoucher);
     }
 }
