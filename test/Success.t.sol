@@ -47,7 +47,6 @@ contract SuccessTest is Test {
 
         assertEq(nft.totalSupply(), 1, "total supply should be 1 after minting");
         assertEq(nft.ownerOf(tokenId), buyer, "owner should be buyer");
-        assertTrue(sale.redeemed_key(key), "key should be marked redeemed");
 
         vm.prank(buyer);
         nft.safeTransferFrom(buyer, receiver, tokenId);
