@@ -4,9 +4,9 @@ pragma solidity ^0.8.24;
 import {NFT42} from "./42.sol";
 import {ECDSA} from "openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol";
 
-/// @title NFT42 Sale
-/// @notice Simple public sale contract to mint and sell Glitch NFTs for a fixed price.
-contract Sale {
+/// @title NFT42 MintGuard
+/// @notice Simple public mint guard contract to mint and sell 42 NFTs
+contract MintGuard {
     struct Permission {
         address minter;
         uint8 v;

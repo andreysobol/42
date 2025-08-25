@@ -3,11 +3,11 @@ pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
-import {Sale} from "../src/Sale.sol";
+import {MintGuard} from "../src/Sale.sol";
 
 contract OnlyMintGuardMintTest is Test {
     NFT42 private nft;
-    Sale private sale;
+    MintGuard private sale;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -23,7 +23,7 @@ contract OnlyMintGuardMintTest is Test {
 
         address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new Sale(nft, PRICE, permissionSigner);
+        sale = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         nonMintGuardAddress = makeAddr("nonMintGuardAddress");

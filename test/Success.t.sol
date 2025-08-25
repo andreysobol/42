@@ -3,11 +3,11 @@ pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
-import {Sale} from "../src/Sale.sol";
+import {MintGuard} from "../src/Sale.sol";
 
 contract SuccessTest is Test {
     NFT42 private nft;
-    Sale private sale;
+    MintGuard private sale;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -23,7 +23,7 @@ contract SuccessTest is Test {
 
         address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new Sale(nft, PRICE, permissionSigner);
+        sale = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         receiver = makeAddr("receiver");
@@ -34,13 +34,13 @@ contract SuccessTest is Test {
         bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
+        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
 
         assertEq(nft.totalSupply(), 0, "total supply should be 0 before minting");
 
         // Expect Purchased event; check buyer (topic1) and data (price), ignore tokenId
         vm.expectEmit(true, false, false, true);
-        emit Sale.Purchased(buyer, 0, PRICE);
+        emit MintGuard.Purchased(buyer, 0, PRICE);
 
         vm.prank(buyer);
         uint256 tokenId = sale.buy{value: PRICE}(perm);

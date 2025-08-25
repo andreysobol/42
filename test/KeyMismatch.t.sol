@@ -3,11 +3,11 @@ pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
-import {Sale} from "../src/Sale.sol";
+import {MintGuard} from "../src/Sale.sol";
 
 contract MinterMismatchTest is Test {
     NFT42 private nft;
-    Sale private sale;
+    MintGuard private sale;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -23,7 +23,7 @@ contract MinterMismatchTest is Test {
 
         address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new Sale(nft, PRICE, permissionSigner);
+        sale = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer1 = makeAddr("buyer1");
         buyer2 = makeAddr("buyer2");
@@ -36,7 +36,7 @@ contract MinterMismatchTest is Test {
         bytes32 digest = keccak256(abi.encodePacked(buyer1));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({
+        MintGuard.Permission memory perm = MintGuard.Permission({
             minter: buyer2, // Different from what was signed (buyer1)
             v: v,
             r: r,
@@ -44,7 +44,7 @@ contract MinterMismatchTest is Test {
         });
 
         vm.prank(buyer2);
-        vm.expectRevert(Sale.IncorrectPermission.selector);
+        vm.expectRevert(MintGuard.IncorrectPermission.selector);
         sale.buy{value: PRICE}(perm);
     }
 }

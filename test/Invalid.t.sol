@@ -3,11 +3,11 @@ pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
-import {Sale} from "../src/Sale.sol";
+import {MintGuard} from "../src/Sale.sol";
 
 contract InvalidTest is Test {
     NFT42 private nft;
-    Sale private sale;
+    MintGuard private sale;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -22,7 +22,7 @@ contract InvalidTest is Test {
 
         address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new Sale(nft, PRICE, permissionSigner);
+        sale = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 1 ether);
@@ -35,10 +35,10 @@ contract InvalidTest is Test {
         uint256 wrongPk = 0xB0B;
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(wrongPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
+        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
 
         vm.prank(buyer);
-        vm.expectRevert(Sale.IncorrectPermission.selector);
+        vm.expectRevert(MintGuard.IncorrectPermission.selector);
         sale.buy{value: PRICE}(perm);
     }
 
@@ -48,7 +48,7 @@ contract InvalidTest is Test {
         // Sign with the original permission signer
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
+        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
 
         // Change the permission signer to a new one
         address newSigner = makeAddr("newSigner");
@@ -57,7 +57,7 @@ contract InvalidTest is Test {
 
         // Try to use the old signer's signature - should fail
         vm.prank(buyer);
-        vm.expectRevert(Sale.IncorrectPermission.selector);
+        vm.expectRevert(MintGuard.IncorrectPermission.selector);
         sale.buy{value: PRICE}(perm);
     }
 }

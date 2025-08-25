@@ -3,11 +3,11 @@ pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
-import {Sale} from "../src/Sale.sol";
+import {MintGuard} from "../src/Sale.sol";
 
 contract WithdrawTest is Test {
     NFT42 private nft;
-    Sale private sale;
+    MintGuard private sale;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -23,7 +23,7 @@ contract WithdrawTest is Test {
 
         address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new Sale(nft, PRICE, permissionSigner);
+        sale = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         owner = makeAddr("owner");
@@ -36,7 +36,7 @@ contract WithdrawTest is Test {
         bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
+        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
 
         uint256 testContractBalanceBefore = address(this).balance;
         uint256 saleBalanceBefore = address(sale).balance;
@@ -59,7 +59,7 @@ contract WithdrawTest is Test {
         address nonOwner = makeAddr("nonOwner");
 
         vm.prank(nonOwner);
-        vm.expectRevert(Sale.NotOwner.selector);
+        vm.expectRevert(MintGuard.NotOwner.selector);
         sale.withdraw();
     }
 

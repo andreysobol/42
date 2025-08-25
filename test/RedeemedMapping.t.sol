@@ -3,11 +3,11 @@ pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
-import {Sale} from "../src/Sale.sol";
+import {MintGuard} from "../src/Sale.sol";
 
 contract MintAddressMappingTest is Test {
     NFT42 private nft;
-    Sale private sale;
+    MintGuard private sale;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -24,7 +24,7 @@ contract MintAddressMappingTest is Test {
 
         address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new Sale(nft, PRICE, permissionSigner);
+        sale = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer1 = makeAddr("buyer1");
         buyer2 = makeAddr("buyer2");
@@ -41,7 +41,7 @@ contract MintAddressMappingTest is Test {
         bytes32 digest = keccak256(abi.encodePacked(buyer1));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer1, v: v, r: r, s: s});
+        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer1, v: v, r: r, s: s});
 
         vm.prank(buyer1);
         sale.buy{value: PRICE}(perm);
@@ -60,7 +60,7 @@ contract MintAddressMappingTest is Test {
         bytes32 digest = keccak256(abi.encodePacked(buyer1));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer1, v: v, r: r, s: s});
+        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer1, v: v, r: r, s: s});
 
         vm.prank(buyer1);
         sale.buy{value: PRICE}(perm);
@@ -74,7 +74,7 @@ contract MintAddressMappingTest is Test {
         digest = keccak256(abi.encodePacked(buyer2));
         (v, r, s) = vm.sign(permissionSignerPk, digest);
 
-        perm = Sale.Permission({minter: buyer2, v: v, r: r, s: s});
+        perm = MintGuard.Permission({minter: buyer2, v: v, r: r, s: s});
 
         vm.prank(buyer2);
         sale.buy{value: PRICE}(perm);

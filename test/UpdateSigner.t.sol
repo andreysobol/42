@@ -3,11 +3,11 @@ pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
-import {Sale} from "../src/Sale.sol";
+import {MintGuard} from "../src/Sale.sol";
 
 contract UpdateSignerTest is Test {
     NFT42 private nft;
-    Sale private sale;
+    MintGuard private sale;
 
     address private permissionSigner;
     uint256 private permissionSignerPk;
@@ -28,7 +28,7 @@ contract UpdateSignerTest is Test {
 
         address predictedSale = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
         nft = new NFT42("ipfs://base/", predictedSale);
-        sale = new Sale(nft, PRICE, permissionSigner);
+        sale = new MintGuard(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 2 ether);
@@ -39,7 +39,7 @@ contract UpdateSignerTest is Test {
         bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
+        MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
 
         // Old signer should work before update
         vm.prank(buyer);
@@ -56,10 +56,10 @@ contract UpdateSignerTest is Test {
         digest = keccak256(abi.encodePacked(buyer2));
         (v, r, s) = vm.sign(permissionSignerPk, digest);
 
-        perm = Sale.Permission({minter: buyer2, v: v, r: r, s: s});
+        perm = MintGuard.Permission({minter: buyer2, v: v, r: r, s: s});
 
         vm.prank(buyer2);
-        vm.expectRevert(Sale.IncorrectPermission.selector);
+        vm.expectRevert(MintGuard.IncorrectPermission.selector);
         sale.buy{value: PRICE}(perm);
 
         // New signer should work after update
@@ -68,7 +68,7 @@ contract UpdateSignerTest is Test {
         digest = keccak256(abi.encodePacked(buyer3));
         (v, r, s) = vm.sign(newSignerPk, digest);
 
-        perm = Sale.Permission({minter: buyer3, v: v, r: r, s: s});
+        perm = MintGuard.Permission({minter: buyer3, v: v, r: r, s: s});
 
         vm.prank(buyer3);
         tokenId = sale.buy{value: PRICE}(perm);
