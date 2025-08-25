@@ -3,7 +3,7 @@ pragma solidity ^0.8.24;
 
 import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
-import {MintGuard} from "../src/Sale.sol";
+import {MintGuard} from "../src/MintGuard.sol";
 
 contract UpdateSignerTest is Test {
     NFT42 private nft;
