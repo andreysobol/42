@@ -5,7 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
 import {Sale} from "../src/Sale.sol";
 
-contract OnlySaleMintTest is Test {
+contract OnlyMintGuardMintTest is Test {
     NFT42 private nft;
     Sale private sale;
 
@@ -13,7 +13,7 @@ contract OnlySaleMintTest is Test {
     uint256 private permissionSignerPk;
 
     address private buyer;
-    address private nonSaleAddress;
+    address private nonMintGuardAddress;
 
     uint256 private constant PRICE = 0.01 ether;
 
@@ -26,19 +26,19 @@ contract OnlySaleMintTest is Test {
         sale = new Sale(nft, PRICE, permissionSigner);
 
         buyer = makeAddr("buyer");
-        nonSaleAddress = makeAddr("nonSaleAddress");
+        nonMintGuardAddress = makeAddr("nonMintGuardAddress");
         vm.deal(buyer, 1 ether);
     }
 
-    function test_only_sale_can_mint() public {
-        // Try to mint directly from non-sale address
-        vm.prank(nonSaleAddress);
-        vm.expectRevert("Not sale");
+    function test_only_mint_guard_can_mint() public {
+        // Try to mint directly from non-mintGuard address
+        vm.prank(nonMintGuardAddress);
+        vm.expectRevert("Not mintGuard");
         nft.mint(buyer);
     }
 
-    function test_sale_can_mint() public {
-        // Sale should be able to mint
+    function test_mint_guard_can_mint() public {
+        // Sale (mintGuard) should be able to mint
         vm.prank(address(sale));
         uint256 tokenId = nft.mint(buyer);
         assertEq(nft.ownerOf(tokenId), buyer, "Owner should be buyer");
