@@ -9,7 +9,6 @@ import {ECDSA} from "openzeppelin-contracts/contracts/utils/cryptography/ECDSA.s
 contract Sale {
     struct Permission {
         address minter;
-        uint32 key;
         uint8 v;
         bytes32 r;
         bytes32 s;
@@ -25,8 +24,8 @@ contract Sale {
     /// @notice Address authorized to sign permissions.
     address public permissionSigner;
 
-    /// @notice Tracks whether a permission key has been redeemed.
-    mapping(uint32 => bool) public redeemed_key;
+    /// @notice Tracks whether an address has already minted.
+    mapping(address => bool) public mint_address;
 
     event Purchased(address indexed buyer, uint256 indexed tokenId, uint256 pricePaid);
     event PriceUpdated(uint256 oldPrice, uint256 newPrice);
@@ -39,7 +38,7 @@ contract Sale {
     error ZeroAddress();
     error InvalidSignature();
     error IncorrectPermission();
-    error KeyAlreadyRedeemed();
+    error AlreadyMinted();
 
     modifier onlyOwner() {
         if (msg.sender != owner) revert NotOwner();
@@ -61,10 +60,10 @@ contract Sale {
     function buy(Permission calldata perm) external payable returns (uint256 tokenId) {
         if (msg.value != price) revert IncorrectPayment(price, msg.value);
         if (perm.minter == address(0)) revert ZeroAddress();
-        if (redeemed_key[perm.key]) revert KeyAlreadyRedeemed();
         if (!verifyPermission(perm)) revert IncorrectPermission();
-        redeemed_key[perm.key] = true;
+        if (mint_address[perm.minter]) revert AlreadyMinted();
         tokenId = nft.mint(perm.minter);
+        mint_address[perm.minter] = true;
         emit Purchased(msg.sender, tokenId, msg.value);
     }
 
@@ -74,7 +73,7 @@ contract Sale {
         if (signer == address(0)) return false;
 
         // Hash the permission payload
-        bytes32 digest = keccak256(abi.encodePacked(perm.minter, perm.key));
+        bytes32 digest = keccak256(abi.encodePacked(perm.minter));
 
         // Verify signature
         address recovered = ECDSA.recover(digest, perm.v, perm.r, perm.s);

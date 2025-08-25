@@ -29,11 +29,10 @@ contract PriceMismatchTest is Test {
     }
 
     function test_price_mismatch_send_less() public {
-        uint32 key = 42;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
 
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(Sale.IncorrectPayment.selector, PRICE, PRICE - 0.001 ether));
@@ -41,11 +40,10 @@ contract PriceMismatchTest is Test {
     }
 
     function test_price_mismatch_send_more() public {
-        uint32 key = 43;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
 
         vm.prank(buyer);
         vm.expectRevert(abi.encodeWithSelector(Sale.IncorrectPayment.selector, PRICE, PRICE + 0.001 ether));

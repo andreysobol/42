@@ -5,7 +5,7 @@ import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
 import {Sale} from "../src/Sale.sol";
 
-contract ReuseKeyTest is Test {
+contract ReuseAddressTest is Test {
     NFT42 private nft;
     Sale private sale;
 
@@ -28,22 +28,21 @@ contract ReuseKeyTest is Test {
         vm.deal(buyer, 2 ether); // Fund for two purchases
     }
 
-    function test_reuse_key_first_buy_succeeds_second_reverts() public {
-        uint32 key = 42;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+    function test_reuse_address_first_buy_succeeds_second_reverts() public {
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
 
         // First buy should succeed
         vm.prank(buyer);
         uint256 tokenId = sale.buy{value: PRICE}(perm);
         assertEq(nft.ownerOf(tokenId), buyer, "First buy: owner should be buyer");
-        assertTrue(sale.redeemed_key(key), "First buy: key should be marked redeemed");
+        assertTrue(sale.mint_address(buyer), "First buy: address should be marked as minted");
 
-        // Second buy with same key should fail
+        // Second buy with same address should fail
         vm.prank(buyer);
-        vm.expectRevert(Sale.KeyAlreadyRedeemed.selector);
+        vm.expectRevert(Sale.AlreadyMinted.selector);
         sale.buy{value: PRICE}(perm);
     }
 }

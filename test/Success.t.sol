@@ -29,11 +29,10 @@ contract SuccessTest is Test {
     }
 
     function test_successful_buy_with_valid_signature() public {
-        uint32 key = 42;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
 
         // Expect Purchased event; check buyer (topic1) and data (price), ignore tokenId
         vm.expectEmit(true, false, false, true);
@@ -43,6 +42,6 @@ contract SuccessTest is Test {
         uint256 tokenId = sale.buy{value: PRICE}(perm);
 
         assertEq(nft.ownerOf(tokenId), buyer, "owner should be buyer");
-        assertTrue(sale.redeemed_key(key), "key should be marked redeemed");
+        assertTrue(sale.mint_address(buyer), "address should be marked as minted");
     }
 }

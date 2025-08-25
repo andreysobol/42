@@ -29,14 +29,13 @@ contract InvalidTest is Test {
     }
 
     function test_invalid_signature_wrong_private_key() public {
-        uint32 key = 7;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
 
         // Sign with the wrong private key
         uint256 wrongPk = 0xB0B;
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(wrongPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
 
         vm.prank(buyer);
         vm.expectRevert(Sale.IncorrectPermission.selector);
@@ -44,13 +43,12 @@ contract InvalidTest is Test {
     }
 
     function test_wrong_signer_configured() public {
-        uint32 key = 42;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
 
         // Sign with the original permission signer
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
 
         // Change the permission signer to a new one
         address newSigner = makeAddr("newSigner");

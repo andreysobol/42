@@ -29,26 +29,24 @@ contract SignatureTest is Test {
     }
 
     function test_signature_verifyPermission_and_buy_success() public {
-        uint32 key = 42;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
 
         vm.prank(buyer);
         uint256 tokenId = sale.buy{value: PRICE}(perm);
         assertEq(nft.ownerOf(tokenId), buyer);
-        assertTrue(sale.redeemed_key(key));
+        assertTrue(sale.mint_address(buyer));
     }
 
     function test_signature_invalidSignature_reverts() public {
-        uint32 key = 7;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
         uint256 wrongPk = 0xB0B;
         (, bytes32 r, bytes32 s) = vm.sign(wrongPk, digest);
         uint8 v = 27;
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
 
         vm.prank(buyer);
         vm.expectRevert(Sale.IncorrectPermission.selector);

@@ -31,24 +31,29 @@ contract BoundarySupplyTest is Test {
     function test_boundary_token_supply() public {
         // Mint up to 1023 tokens (0 to 1023 = 1024 total)
         for (uint32 i = 0; i < 1024; i++) {
-            bytes32 digest = keccak256(abi.encodePacked(buyer, i));
+            address currentBuyer = address(uint160(uint160(buyer) + i)); // Create unique buyer addresses
+            vm.deal(currentBuyer, 2 ether); // Fund each buyer
+            
+            bytes32 digest = keccak256(abi.encodePacked(currentBuyer));
             (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-            Sale.Permission memory perm = Sale.Permission({minter: buyer, key: i, v: v, r: r, s: s});
+            Sale.Permission memory perm = Sale.Permission({minter: currentBuyer, v: v, r: r, s: s});
 
-            vm.prank(buyer);
+            vm.prank(currentBuyer);
             uint256 tokenId = sale.buy{value: PRICE}(perm);
-            assertEq(tokenId, i, "Token ID should match key");
+            assertEq(tokenId, i, "Token ID should match iteration");
         }
 
         // Next buy should fail due to supply cap
-        uint32 key = 1024;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        address nextBuyer = address(uint160(uint160(buyer) + 1024));
+        vm.deal(nextBuyer, 2 ether);
+        
+        bytes32 digest = keccak256(abi.encodePacked(nextBuyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: nextBuyer, v: v, r: r, s: s});
 
-        vm.prank(buyer);
+        vm.prank(nextBuyer);
         vm.expectRevert("Maximum tokens (1024) already minted");
         sale.buy{value: PRICE}(perm);
     }

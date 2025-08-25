@@ -33,11 +33,10 @@ contract WithdrawTest is Test {
 
     function test_withdraw_after_purchases() public {
         // Make a purchase to add balance to sale contract
-        uint32 key = 42;
-        bytes32 digest = keccak256(abi.encodePacked(buyer, key));
+        bytes32 digest = keccak256(abi.encodePacked(buyer));
         (uint8 v, bytes32 r, bytes32 s) = vm.sign(permissionSignerPk, digest);
 
-        Sale.Permission memory perm = Sale.Permission({minter: buyer, key: key, v: v, r: r, s: s});
+        Sale.Permission memory perm = Sale.Permission({minter: buyer, v: v, r: r, s: s});
 
         uint256 testContractBalanceBefore = address(this).balance;
         uint256 saleBalanceBefore = address(sale).balance;
