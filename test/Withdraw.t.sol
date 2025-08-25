@@ -4,6 +4,7 @@ pragma solidity ^0.8.24;
 import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
 import {MintGuard} from "../src/MintGuard.sol";
+import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
 
 contract WithdrawTest is Test {
     NFT42 private nft;
@@ -59,7 +60,7 @@ contract WithdrawTest is Test {
         address nonOwner = makeAddr("nonOwner");
 
         vm.prank(nonOwner);
-        vm.expectRevert(MintGuard.NotOwner.selector);
+        vm.expectRevert(abi.encodeWithSelector(Ownable.OwnableUnauthorizedAccount.selector, nonOwner));
         mintGuard.withdraw();
     }
 
