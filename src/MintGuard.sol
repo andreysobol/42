@@ -4,10 +4,11 @@ pragma solidity ^0.8.24;
 import {NFT42} from "./42.sol";
 import {ECDSA} from "openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol";
 import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
+import {ReentrancyGuard} from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
 
 /// @title NFT42 MintGuard
 /// @notice Simple public mint guard contract to mint and sell 42 NFTs
-contract MintGuard is Ownable {
+contract MintGuard is Ownable, ReentrancyGuard {
     struct Permission {
         address minter;
         uint8 v;
@@ -48,7 +49,7 @@ contract MintGuard is Ownable {
 
     /// @notice Mint one NFT to the `perm.minter` address.
     /// @param perm Permission proving the mint is authorized.
-    function mint(Permission calldata perm) external payable returns (uint256 tokenId) {
+    function mint(Permission calldata perm) external payable nonReentrant returns (uint256 tokenId) {
         if (msg.value != price) revert IncorrectPayment(price, msg.value);
         if (perm.minter == address(0)) revert ZeroAddress();
         verifyPermission(perm);
@@ -73,14 +74,14 @@ contract MintGuard is Ownable {
     }
 
     /// @notice Update the permission signer address.
-    function setPermissionSigner(address _newSigner) external onlyOwner {
+    function setPermissionSigner(address _newSigner) external onlyOwner nonReentrant {
         address old = permissionSigner;
         permissionSigner = _newSigner;
         emit PermissionSignerUpdated(old, _newSigner);
     }
 
     /// @notice Update the price per NFT.
-    function setPrice(uint256 _newPrice) external onlyOwner {
+    function setPrice(uint256 _newPrice) external onlyOwner nonReentrant {
         if (_newPrice == 0) revert InvalidPrice();
         uint256 old = price;
         price = _newPrice;
@@ -88,7 +89,7 @@ contract MintGuard is Ownable {
     }
 
     /// @notice Withdraw full contract balance to the owner.
-    function withdraw() external onlyOwner {
+    function withdraw() external onlyOwner nonReentrant {
         uint256 amount = address(this).balance;
         (bool ok,) = payable(owner()).call{value: amount}("");
         require(ok, "Withdraw failed");
@@ -96,6 +97,6 @@ contract MintGuard is Ownable {
     }
 
     receive() external payable {}
-    
+
     fallback() external payable {}
 }
