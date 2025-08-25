@@ -96,4 +96,6 @@ contract MintGuard is Ownable {
     }
 
     receive() external payable {}
+    
+    fallback() external payable {}
 }
