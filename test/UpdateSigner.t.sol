@@ -59,7 +59,7 @@ contract UpdateSignerTest is Test {
         perm = MintGuard.Permission({minter: buyer2, v: v, r: r, s: s});
 
         vm.prank(buyer2);
-        vm.expectRevert(MintGuard.IncorrectPermission.selector);
+        vm.expectRevert(MintGuard.InvalidSignature.selector);
         mintGuard.mint{value: PRICE}(perm);
 
         // New signer should work after update

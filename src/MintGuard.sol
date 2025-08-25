@@ -37,7 +37,6 @@ contract MintGuard {
     error IncorrectPayment(uint256 expected, uint256 actual);
     error ZeroAddress();
     error InvalidSignature();
-    error IncorrectPermission();
     error AlreadyMinted();
 
     modifier onlyOwner() {
@@ -60,7 +59,7 @@ contract MintGuard {
     function mint(Permission calldata perm) external payable returns (uint256 tokenId) {
         if (msg.value != price) revert IncorrectPayment(price, msg.value);
         if (perm.minter == address(0)) revert ZeroAddress();
-        if (!verifyPermission(perm)) revert IncorrectPermission();
+        verifyPermission(perm);
         if (mint_address[perm.minter]) revert AlreadyMinted();
         tokenId = nft.mint(perm.minter);
         mint_address[perm.minter] = true;
@@ -70,14 +69,15 @@ contract MintGuard {
     /// @notice Verify a permission signed by the configured `permissionSigner`.
     function verifyPermission(Permission calldata perm) private view returns (bool) {
         address signer = permissionSigner;
-        if (signer == address(0)) return false;
+        if (signer == address(0)) revert ZeroAddress();
 
         // Hash the permission payload
         bytes32 digest = keccak256(abi.encodePacked(perm.minter));
 
         // Verify signature
         address recovered = ECDSA.recover(digest, perm.v, perm.r, perm.s);
-        return recovered == signer;
+        if (recovered != signer) revert InvalidSignature();
+        return true;
     }
 
     /// @notice Update the permission signer address.

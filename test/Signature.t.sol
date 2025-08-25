@@ -49,7 +49,7 @@ contract SignatureTest is Test {
         MintGuard.Permission memory perm = MintGuard.Permission({minter: buyer, v: v, r: r, s: s});
 
         vm.prank(buyer);
-        vm.expectRevert(MintGuard.IncorrectPermission.selector);
+        vm.expectRevert(MintGuard.InvalidSignature.selector);
         mintGuard.mint{value: PRICE}(perm);
     }
 }

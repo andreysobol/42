@@ -44,7 +44,7 @@ contract MinterMismatchTest is Test {
         });
 
         vm.prank(buyer);
-        vm.expectRevert(MintGuard.IncorrectPermission.selector);
+        vm.expectRevert(MintGuard.InvalidSignature.selector);
         mintGuard.mint{value: PRICE}(perm);
     }
 }
