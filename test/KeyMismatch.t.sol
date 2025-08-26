@@ -25,11 +25,15 @@ contract MinterMismatchTest is Test {
 
         address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 2);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = MintGuard(payable(new TransparentUpgradeableProxy(
-            address(new MintGuard()),
-            address(this),
-            abi.encodeWithSelector(MintGuard.initialize.selector, nft, FEE, voucherSigner, address(this))
-        )));
+        mintGuard = MintGuard(
+            payable(
+                new TransparentUpgradeableProxy(
+                    address(new MintGuard()),
+                    address(this),
+                    abi.encodeWithSelector(MintGuard.initialize.selector, nft, FEE, voucherSigner, address(this))
+                )
+            )
+        );
 
         buyer1 = makeAddr("buyer1");
         buyer2 = makeAddr("buyer2");
