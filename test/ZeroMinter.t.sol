@@ -4,6 +4,8 @@ pragma solidity ^0.8.24;
 import {Test} from "forge-std/Test.sol";
 import {NFT42} from "../src/42.sol";
 import {MintGuard} from "../src/MintGuard.sol";
+import {TransparentUpgradeableProxy} from
+    "openzeppelin-contracts/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 
 contract ZeroMinterTest is Test {
     NFT42 private nft;
@@ -20,9 +22,13 @@ contract ZeroMinterTest is Test {
         voucherSignerPk = 0xA11CE;
         voucherSigner = vm.addr(voucherSignerPk);
 
-        address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 1);
+        address predictedMintGuard = vm.computeCreateAddress(address(this), vm.getNonce(address(this)) + 2);
         nft = new NFT42("ipfs://base/", predictedMintGuard, 1024);
-        mintGuard = new MintGuard(nft, FEE, voucherSigner);
+        mintGuard = MintGuard(payable(new TransparentUpgradeableProxy(
+            address(new MintGuard()),
+            address(this),
+            abi.encodeWithSelector(MintGuard.initialize.selector, nft, FEE, voucherSigner, address(this))
+        )));
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 1 ether);

@@ -3,12 +3,13 @@ pragma solidity ^0.8.24;
 
 import {NFT42} from "./42.sol";
 import {ECDSA} from "openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol";
-import {Ownable} from "openzeppelin-contracts/contracts/access/Ownable.sol";
-import {ReentrancyGuard} from "openzeppelin-contracts/contracts/utils/ReentrancyGuard.sol";
+import {OwnableUpgradeable} from "openzeppelin-contracts-upgradeable/contracts/access/OwnableUpgradeable.sol";
+import {ReentrancyGuardUpgradeable} from
+    "openzeppelin-contracts-upgradeable/contracts/utils/ReentrancyGuardUpgradeable.sol";
 
 /// @title NFT42 MintGuard
 /// @notice Simple public mint guard contract to mint and sell 42 NFTs
-contract MintGuard is Ownable, ReentrancyGuard {
+contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     struct Voucher {
         address minter;
         uint8 v;
@@ -16,7 +17,7 @@ contract MintGuard is Ownable, ReentrancyGuard {
         bytes32 s;
     }
 
-    NFT42 public immutable nft;
+    NFT42 public nft;
 
     /// @notice Fee per NFT in wei.
     uint256 public fee;
@@ -38,7 +39,13 @@ contract MintGuard is Ownable, ReentrancyGuard {
     error InvalidSignature();
     error AlreadyMinted();
 
-    constructor(NFT42 _nft, uint256 _fee, address _voucherSigner) Ownable(msg.sender) {
+    constructor() {
+        _disableInitializers();
+    }
+
+    function initialize(NFT42 _nft, uint256 _fee, address _voucherSigner, address _owner) public initializer {
+        __ReentrancyGuard_init();
+        __Ownable_init(_owner);
         if (address(_nft) == address(0)) revert ZeroAddress();
         if (_voucherSigner == address(0)) revert ZeroAddress();
         nft = _nft;
