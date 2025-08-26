@@ -54,7 +54,7 @@ contract BoundarySupplyTest is Test {
         MintGuard.Voucher memory nextVoucher = MintGuard.Voucher({minter: nextBuyer, v: nextV, r: nextR, s: nextS});
 
         vm.prank(nextBuyer);
-        vm.expectRevert("Maximum tokens already minted");
+        vm.expectRevert(abi.encodeWithSelector(NFT42.MaxTokensReached.selector, 1024));
         mintGuard.mint{value: FEE}(nextVoucher);
     }
 }

@@ -33,7 +33,7 @@ contract OnlyMintGuardMintTest is Test {
     function test_only_mint_guard_can_mint() public {
         // Try to mint directly from non-mintGuard address
         vm.prank(nonMintGuardAddress);
-        vm.expectRevert("Not mintGuard");
+        vm.expectRevert(NFT42.NotMintGuard.selector);
         nft.mint(buyer);
     }
 
