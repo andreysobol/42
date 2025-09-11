@@ -29,10 +29,11 @@ contract ZeroMinterTest is Test {
                 new TransparentUpgradeableProxy(
                     address(new MintGuard()),
                     address(this),
-                    abi.encodeWithSelector(MintGuard.initialize.selector, nft, FEE, voucherSigner, address(this))
+                    abi.encodeWithSelector(MintGuard.initialize.selector, FEE, voucherSigner, address(this))
                 )
             )
         );
+        mintGuard.setNft(nft);
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 1 ether);

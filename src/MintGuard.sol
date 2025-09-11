@@ -61,11 +61,12 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         verifyVoucher(voucher);
         require(!mintAddress[voucher.minter], AlreadyMinted());
         mintAddress[voucher.minter] = true;
+        require(address(nft) != address(0), ZeroAddress());
         tokenId = nft.mint(voucher.minter);
         emit Minted(msg.sender, tokenId, msg.value);
     }
 
-    function setNFT(NFT42 _nft) external onlyOwner {
+    function setNft(NFT42 _nft) external onlyOwner {
         require(address(_nft) != address(0), ZeroAddress());
         nft = _nft;
     }
