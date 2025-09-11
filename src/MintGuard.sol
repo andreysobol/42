@@ -43,12 +43,10 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         _disableInitializers();
     }
 
-    function initialize(NFT42 _nft, uint256 _fee, address _voucherSigner, address _owner) public initializer {
+    function initialize(uint256 _fee, address _voucherSigner, address _owner) public initializer {
         __ReentrancyGuard_init();
         __Ownable_init(_owner);
-        if (address(_nft) == address(0)) revert ZeroAddress();
         if (_voucherSigner == address(0)) revert ZeroAddress();
-        nft = _nft;
         if (_fee == 0) revert InvalidFee();
         fee = _fee;
         voucherSigner = _voucherSigner;
@@ -64,6 +62,11 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         mint_address[voucher.minter] = true;
         tokenId = nft.mint(voucher.minter);
         emit Minted(msg.sender, tokenId, msg.value);
+    }
+
+    function setNFT(NFT42 _nft) external onlyOwner {
+        require(address(_nft) != address(0), ZeroAddress());
+        nft = _nft;
     }
 
     /// @notice Verify a voucher signed by the configured `voucherSigner`.
