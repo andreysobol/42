@@ -11,7 +11,7 @@ contract DeployNFT42 is Script {
     uint256 maxTokens = 1024;
 
     function run() public {
-        address mintGuardAddress = (new DeployMintGuard()).predictAddress();
+        address mintGuardAddress = vm.envAddress("MINT_GUARD_ADDRESS");
         vm.startBroadcast();
         NFT42 nft = new NFT42{salt: bytes32(0)}(baseMetadataUri, mintGuardAddress, maxTokens);
         console.log("NFT42 deployed at", address(nft));

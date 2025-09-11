@@ -23,23 +23,4 @@ contract DeployMintGuard is Script {
         console.log("MintGuard deployed at", address(proxy));
         vm.stopBroadcast();
     }
-
-    function predictAddress() public view returns (address) {
-        address mintGuardExpectedAddress = vm.computeCreate2Address(bytes32(0), keccak256(type(MintGuard).creationCode));
-        address proxyExpectedAddress = vm.computeCreate2Address(
-            bytes32(0),
-            keccak256(
-                abi.encodePacked(
-                    type(TransparentUpgradeableProxy).creationCode,
-                    abi.encode(
-                        mintGuardExpectedAddress,
-                        proxyOwner,
-                        abi.encodeCall(MintGuard.initialize, (fee, voucherSigner, mintGuardOwner))
-                    )
-                )
-            )
-        );
-
-        return proxyExpectedAddress;
-    }
 }
