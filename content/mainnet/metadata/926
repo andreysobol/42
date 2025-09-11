@@ -1,0 +1,19 @@
+{
+    "name": "42 #926",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Dark Green"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Random Hexadecimal"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/926.png"
+}

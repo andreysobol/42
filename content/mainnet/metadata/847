@@ -1,0 +1,19 @@
+{
+    "name": "42 #847",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Dark Cyan"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Random Numbers"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/847.png"
+}

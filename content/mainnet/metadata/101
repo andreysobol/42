@@ -1,0 +1,19 @@
+{
+    "name": "42 #101",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Wine Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV"
+        },
+        {
+            "trait_type": "Text",
+            "value": "The 42nd term of the Fibonacci sequence"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/101.png"
+}

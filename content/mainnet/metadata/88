@@ -1,0 +1,19 @@
+{
+    "name": "42 #88",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "L"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Random Symbols"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/88.png"
+}

@@ -1,0 +1,19 @@
+{
+    "name": "42 #690",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Dark Green"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV"
+        },
+        {
+            "trait_type": "Text",
+            "value": "The Answer to the Ultimate Question of Life, the Universe, and Everything is 42"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/690.png"
+}

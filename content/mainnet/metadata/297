@@ -1,0 +1,19 @@
+{
+    "name": "42 #297",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Dark Cyan"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "L"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Empty Set"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/297.png"
+}

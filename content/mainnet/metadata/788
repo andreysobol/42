@@ -1,0 +1,19 @@
+{
+    "name": "42 #788",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Dark Cyan"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV protocol"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Random Symbols"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/788.png"
+}

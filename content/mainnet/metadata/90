@@ -1,0 +1,19 @@
+{
+    "name": "42 #90",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Dark Brown"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV protocol"
+        },
+        {
+            "trait_type": "Text",
+            "value": "UP & DOWN"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/90.png"
+}

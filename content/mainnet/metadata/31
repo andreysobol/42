@@ -1,0 +1,19 @@
+{
+    "name": "42 #31",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Reddish Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV"
+        },
+        {
+            "trait_type": "Text",
+            "value": "LTV protocol: Smart Contracts"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/31.png"
+}

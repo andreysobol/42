@@ -1,0 +1,19 @@
+{
+    "name": "42 #707",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV protocol"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Random Hexadecimal"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/707.png"
+}

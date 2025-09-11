@@ -1,0 +1,19 @@
+{
+    "name": "42 #698",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Teal Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV protocol"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Molybdenum"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/698.png"
+}

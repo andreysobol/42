@@ -1,0 +1,19 @@
+{
+    "name": "42 #675",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Dark Green"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV protocol"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Empty Set"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/675.png"
+}

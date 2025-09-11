@@ -1,0 +1,19 @@
+{
+    "name": "42 #119",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Dark Green"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "L"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Random Hexadecimal"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/119.png"
+}

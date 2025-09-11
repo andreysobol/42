@@ -1,0 +1,19 @@
+{
+    "name": "42 #4",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Bluish Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "L"
+        },
+        {
+            "trait_type": "Text",
+            "value": "1^2 + 2^2 + ... + 42^2"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/4.png"
+}

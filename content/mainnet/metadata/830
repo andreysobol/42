@@ -1,0 +1,19 @@
+{
+    "name": "42 #830",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Reddish Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV protocol"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Random Symbols"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/830.png"
+}
