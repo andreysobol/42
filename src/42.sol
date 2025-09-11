@@ -23,7 +23,7 @@ contract NFT42 is ERC721 {
         _;
     }
 
-    constructor(string memory _baseMetadataUri, address _mintGuard, uint256 _maxTokens) ERC721("Glitch", "GLCH") {
+    constructor(string memory _baseMetadataUri, address _mintGuard, uint256 _maxTokens) ERC721("42", "FTW") {
         require(_mintGuard != address(0), ZeroAddress());
         require(_maxTokens > 0, InvalidMaxTokens());
         baseMetadataUri = _baseMetadataUri;
