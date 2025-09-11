@@ -4,7 +4,7 @@
 ```
 mainnet QmXTn6YvXZgNmNzyBN19RgYgpG6YeZNnTwo1zWbHSb8x5b
 
-sepolia QmXdDYJ8LyZ8oETJpZV95nBvGzXGJZkbT5GHbGJ2JHdCy1
+sepolia QmbtxQySbQcGxMUxofMhoxdevKeQMjE9i6xuWsSoLnJbrw
 ```
 
 ## IPFS Upload Instructions
