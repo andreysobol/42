@@ -4,16 +4,16 @@
     "attributes": [
         {
             "trait_type": "Background",
-            "value": "Golden Black"
+            "value": "Dark Green"
         },
         {
             "trait_type": "Logo",
-            "value": "L"
+            "value": "LTV"
         },
         {
             "trait_type": "Text",
             "value": "SEPOLIA"
         }
     ],
-    "image": "ipfs://QmZBcE2X1Q7fiR89Te8fcNT5GLNnx3w9nAeu38KEodKX6k/25.png"
+    "image": "ipfs://QmXZMrRgHS8H2Yrro5AtX7qw7miRqTa3cu4Pat23HTtQKu/25.png"
 }

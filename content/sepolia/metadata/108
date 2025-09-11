@@ -4,7 +4,7 @@
     "attributes": [
         {
             "trait_type": "Background",
-            "value": "Golden Black"
+            "value": "Reddish Black"
         },
         {
             "trait_type": "Logo",
@@ -15,5 +15,5 @@
             "value": "SEPOLIA"
         }
     ],
-    "image": "ipfs://QmZBcE2X1Q7fiR89Te8fcNT5GLNnx3w9nAeu38KEodKX6k/108.png"
+    "image": "ipfs://QmXZMrRgHS8H2Yrro5AtX7qw7miRqTa3cu4Pat23HTtQKu/108.png"
 }
