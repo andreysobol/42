@@ -55,7 +55,7 @@ contract FuzzTest is Test {
         vm.prank(minter);
         uint256 tokenId = mintGuard.mint{value: FEE}(voucher);
         assertEq(nft.ownerOf(tokenId), minter, "Owner should be minter");
-        assertTrue(mintGuard.mint_address(minter), "Address should be marked as minted");
+        assertTrue(mintGuard.mintAddress(minter), "Address should be marked as minted");
 
         // Second purchase with same address should fail
         vm.deal(minter, FEE);
@@ -71,7 +71,7 @@ contract FuzzTest is Test {
             vm.assume(minter.code.length == 0); // Skip contract addresses
 
             // Skip if address was already used in this test
-            if (mintGuard.mint_address(minter)) continue;
+            if (mintGuard.mintAddress(minter)) continue;
 
             bytes32 digest = keccak256(abi.encodePacked(minter));
             (uint8 v, bytes32 r, bytes32 s) = vm.sign(voucherSignerPk, digest);
@@ -85,7 +85,7 @@ contract FuzzTest is Test {
             vm.prank(minter);
             uint256 tokenId = mintGuard.mint{value: FEE}(voucher);
             assertEq(nft.ownerOf(tokenId), minter, "Owner should be minter");
-            assertTrue(mintGuard.mint_address(minter), "Address should be marked as minted");
+            assertTrue(mintGuard.mintAddress(minter), "Address should be marked as minted");
         }
     }
 
@@ -102,6 +102,6 @@ contract FuzzTest is Test {
         vm.prank(minter);
         uint256 tokenId = mintGuard.mint{value: FEE}(voucher);
         assertEq(nft.ownerOf(tokenId), minter, "Owner should be minter");
-        assertTrue(mintGuard.mint_address(minter), "Address should be marked as minted");
+        assertTrue(mintGuard.mintAddress(minter), "Address should be marked as minted");
     }
 }
