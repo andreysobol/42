@@ -3,7 +3,6 @@ pragma solidity ^0.8.24;
 
 import {Script} from "forge-std/Script.sol";
 import {NFT42} from "../src/42.sol";
-import {DeployMintGuard} from "./DeployMintGuard.s.sol";
 import {console} from "forge-std/console.sol";
 
 contract DeployNFT42 is Script {

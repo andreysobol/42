@@ -3,7 +3,6 @@ pragma solidity ^0.8.24;
 
 import {Script} from "forge-std/Script.sol";
 import {MintGuard} from "../src/MintGuard.sol";
-import {NFT42} from "../src/42.sol";
 import {TransparentUpgradeableProxy} from
     "openzeppelin-contracts/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import {console} from "forge-std/console.sol";
