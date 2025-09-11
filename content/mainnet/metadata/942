@@ -1,0 +1,19 @@
+{
+    "name": "42 #942",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "L"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Ethereum: A Secure Decentralised Generalised Transaction Ledger by Gavin Wood"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/942.png"
+}

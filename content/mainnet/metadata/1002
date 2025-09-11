@@ -1,0 +1,19 @@
+{
+    "name": "42 #1002",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Golden Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "L"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Random Numbers"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/1002.png"
+}

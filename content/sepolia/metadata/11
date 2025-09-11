@@ -1,0 +1,19 @@
+{
+    "name": "TESTNET 42 #11",
+    "description": "TESTNET",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Near Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "L"
+        },
+        {
+            "trait_type": "Text",
+            "value": "SEPOLIA"
+        }
+    ],
+    "image": "ipfs://QmZBcE2X1Q7fiR89Te8fcNT5GLNnx3w9nAeu38KEodKX6k/11.png"
+}

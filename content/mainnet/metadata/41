@@ -1,0 +1,19 @@
+{
+    "name": "42 #41",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Purple Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Curatorless Leveraged Tokenized Vault with a Constant Target Loan-To-Value Ratio"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/41.png"
+}

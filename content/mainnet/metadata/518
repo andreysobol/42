@@ -1,0 +1,19 @@
+{
+    "name": "42 #518",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Near Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV protocol"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Random Numbers"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/518.png"
+}

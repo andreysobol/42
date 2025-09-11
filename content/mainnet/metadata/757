@@ -1,0 +1,19 @@
+{
+    "name": "42 #757",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Wine Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV protocol"
+        },
+        {
+            "trait_type": "Text",
+            "value": "UP & DOWN"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/757.png"
+}

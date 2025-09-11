@@ -1,0 +1,19 @@
+{
+    "name": "42 #196",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Wine Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV"
+        },
+        {
+            "trait_type": "Text",
+            "value": "1^2 + 2^2 + ... + 42^2"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/196.png"
+}

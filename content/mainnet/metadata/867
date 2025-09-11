@@ -1,0 +1,19 @@
+{
+    "name": "42 #867",
+    "description": "42",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "Teal Black"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "L"
+        },
+        {
+            "trait_type": "Text",
+            "value": "Empty Set"
+        }
+    ],
+    "image": "ipfs://QmYfhkHuJESMaWKykyGhmGCTWS21Skgn1bEY6MwdrRpdNh/867.png"
+}

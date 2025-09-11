@@ -1,0 +1,19 @@
+{
+    "name": "TESTNET 42 #15",
+    "description": "TESTNET",
+    "attributes": [
+        {
+            "trait_type": "Background",
+            "value": "White"
+        },
+        {
+            "trait_type": "Logo",
+            "value": "LTV protocol"
+        },
+        {
+            "trait_type": "Text",
+            "value": "SEPOLIA"
+        }
+    ],
+    "image": "ipfs://QmZBcE2X1Q7fiR89Te8fcNT5GLNnx3w9nAeu38KEodKX6k/15.png"
+}
