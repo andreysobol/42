@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.24;
+pragma solidity ^0.8.28;
 
 import {NFT42} from "./42.sol";
 import {ECDSA} from "openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol";
@@ -26,7 +26,7 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     address public voucherSigner;
 
     /// @notice Tracks whether an address has already minted.
-    mapping(address => bool) public mint_address;
+    mapping(address => bool) public mintAddress;
 
     event Minted(address indexed buyer, uint256 indexed tokenId, uint256 pricePaid);
     event FeeUpdated(uint256 oldPrice, uint256 newPrice);
@@ -38,6 +38,7 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     error ZeroAddress();
     error InvalidSignature();
     error AlreadyMinted();
+    error WithdrawFailed();
 
     constructor() {
         _disableInitializers();
@@ -46,8 +47,8 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     function initialize(uint256 _fee, address _voucherSigner, address _owner) public initializer {
         __ReentrancyGuard_init();
         __Ownable_init(_owner);
-        if (_voucherSigner == address(0)) revert ZeroAddress();
-        if (_fee == 0) revert InvalidFee();
+        require(_voucherSigner != address(0), ZeroAddress());
+        require(_fee != 0, InvalidFee());
         fee = _fee;
         voucherSigner = _voucherSigner;
     }
@@ -55,11 +56,11 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     /// @notice Mint one NFT to the `voucher.minter` address.
     /// @param voucher Voucher proving the mint is authorized.
     function mint(Voucher calldata voucher) external payable nonReentrant returns (uint256 tokenId) {
-        if (msg.value != fee) revert IncorrectPayment(fee, msg.value);
-        if (voucher.minter == address(0)) revert ZeroAddress();
+        require(msg.value == fee, IncorrectPayment(fee, msg.value));
+        require(voucher.minter != address(0), ZeroAddress());
         verifyVoucher(voucher);
-        if (mint_address[voucher.minter]) revert AlreadyMinted();
-        mint_address[voucher.minter] = true;
+        require(!mintAddress[voucher.minter], AlreadyMinted());
+        mintAddress[voucher.minter] = true;
         tokenId = nft.mint(voucher.minter);
         emit Minted(msg.sender, tokenId, msg.value);
     }
@@ -72,14 +73,15 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     /// @notice Verify a voucher signed by the configured `voucherSigner`.
     function verifyVoucher(Voucher calldata voucher) private view returns (bool) {
         address signer = voucherSigner;
-        if (signer == address(0)) revert ZeroAddress();
+        require(signer != address(0), ZeroAddress());
 
         // Hash the voucher payload
+        // forge-lint: disable-next-line
         bytes32 digest = keccak256(abi.encodePacked(voucher.minter));
 
         // Verify signature
         address recovered = ECDSA.recover(digest, voucher.v, voucher.r, voucher.s);
-        if (recovered != signer) revert InvalidSignature();
+        require(recovered == signer, InvalidSignature());
         return true;
     }
 
@@ -92,7 +94,7 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
     /// @notice Update the fee per NFT.
     function setFee(uint256 _newFee) external onlyOwner nonReentrant {
-        if (_newFee == 0) revert InvalidFee();
+        require(_newFee != 0, InvalidFee());
         uint256 old = fee;
         fee = _newFee;
         emit FeeUpdated(old, _newFee);
@@ -102,7 +104,7 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     function withdraw() external onlyOwner nonReentrant {
         uint256 amount = address(this).balance;
         (bool ok,) = payable(owner()).call{value: amount}("");
-        require(ok, "Withdraw failed");
+        require(ok, WithdrawFailed());
         emit Withdrawn(owner(), amount);
     }
 

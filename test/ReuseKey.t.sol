@@ -48,7 +48,7 @@ contract ReuseAddressTest is Test {
         vm.prank(buyer);
         uint256 tokenId = mintGuard.mint{value: FEE}(voucher);
         assertEq(nft.ownerOf(tokenId), buyer, "First buy: owner should be buyer");
-        assertTrue(mintGuard.mint_address(buyer), "First buy: address should be marked as minted");
+        assertTrue(mintGuard.mintAddress(buyer), "First buy: address should be marked as minted");
 
         // Second buy with same address should fail
         vm.prank(buyer);

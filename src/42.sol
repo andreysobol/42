@@ -11,13 +11,21 @@ contract NFT42 is ERC721 {
 
     error NotMintGuard();
     error MaxTokensReached(uint256 maxTokens);
+    error ZeroAddress();
+    error InvalidMaxTokens();
+
+    function _checkMintGuard() private view {
+        require(msg.sender == mintGuard, NotMintGuard());
+    }
 
     modifier onlyMintGuard() {
-        require(msg.sender == mintGuard, NotMintGuard());
+        _checkMintGuard();
         _;
     }
 
     constructor(string memory _baseMetadataUri, address _mintGuard, uint256 _maxTokens) ERC721("Glitch", "GLCH") {
+        require(_mintGuard != address(0), ZeroAddress());
+        require(_maxTokens > 0, InvalidMaxTokens());
         baseMetadataUri = _baseMetadataUri;
         mintGuard = _mintGuard;
         MAX_TOKENS = _maxTokens;

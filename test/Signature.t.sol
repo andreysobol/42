@@ -47,7 +47,7 @@ contract SignatureTest is Test {
         vm.prank(buyer);
         uint256 tokenId = mintGuard.mint{value: FEE}(voucher);
         assertEq(nft.ownerOf(tokenId), buyer);
-        assertTrue(mintGuard.mint_address(buyer));
+        assertTrue(mintGuard.mintAddress(buyer));
     }
 
     function test_signature_invalidSignature_reverts() public {
