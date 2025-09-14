@@ -34,6 +34,7 @@ contract EventsTest is Test {
             )
         );
         mintGuard.setNft(nft);
+        mintGuard.start(address(0), 0); // Start minting without admin minting
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 2 ether);
@@ -45,9 +46,9 @@ contract EventsTest is Test {
 
         MintGuard.Voucher memory voucher = MintGuard.Voucher({minter: buyer, v: v, r: r, s: s});
 
-        // Expect Minted event with correct buyer, tokenId, and fee
-        vm.expectEmit(true, true, false, true);
-        emit MintGuard.Minted(buyer, 1, FEE);
+        // Expect Minted event with correct buyer and tokenId
+        vm.expectEmit(true, true, false, false);
+        emit MintGuard.Minted(buyer, 1);
 
         vm.prank(buyer);
         mintGuard.mint{value: FEE}(voucher);

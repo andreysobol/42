@@ -67,11 +67,11 @@ forge test -vv
 ```bash
 export RPC_URL=""
 export ETH_FROM="0xYourDeployer"
-export PRIVATE_KEY="0xYourPrivateKey"     # or Foundry keystore
+export PRIVATE_KEY="0xYourPrivateKey"
 export ETHERSCAN_API_KEY="..."
 
 # MintGuard deployment parameters
-export FEE="1000000000000000000"          # 1 ETH in wei
+export FEE="42000000000000000" # 0.042
 export VOUCHER_SIGNER="0xYourSigner"
 export PROXY_OWNER="0xYourProxyOwner"
 export MINT_GUARD_OWNER="0xYourMintGuardOwner"
@@ -88,7 +88,7 @@ export MINT_GUARD_ADDRESS="0xYourMintGuardAddress"    # Set after MintGuard depl
 # Deploy MintGuard
 forge script script/DeployMintGuard.s.sol \
   --rpc-url $RPC_URL --broadcast \
-  --verify --etherscan-api-key $ETHERSCAN_API_KEY
+  --verify --sender $ETH_FROM --private-key $PRIVATE_KEY --etherscan-api-key $ETHERSCAN_API_KEY
 
 # Update MINT_GUARD_ADDRESS with the deployed address
 export MINT_GUARD_ADDRESS="0xDeployedMintGuardAddress"
@@ -100,5 +100,27 @@ export MINT_GUARD_ADDRESS="0xDeployedMintGuardAddress"
 # Deploy NFT42
 forge script script/DeployNFT42.s.sol \
   --rpc-url $RPC_URL --broadcast \
-  --verify --etherscan-api-key $ETHERSCAN_API_KEY
+  --verify --sender $ETH_FROM --private-key $PRIVATE_KEY --etherscan-api-key $ETHERSCAN_API_KEY
 ```
+
+### Sign Voucher
+
+To create a voucher for minting, use the signing script:
+
+```bash
+# Generate the voucher signature
+forge script script/SignVoucher.s.sol --rpc-url $RPC_URL
+```
+
+### Mint with Voucher
+
+To both generate the voucher and send the mint transaction:
+
+```bash
+# Mint NFT using voucher (generates signature and sends transaction)
+forge script script/MintWithVoucher.s.sol \
+  --rpc-url $RPC_URL --broadcast \
+  --sender $ETH_FROM --private-key $PRIVATE_KEY
+```
+
+This script will generate the voucher signature and automatically send the mint transaction with the correct fee.
