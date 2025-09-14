@@ -34,6 +34,7 @@ contract FuzzTest is Test {
             )
         );
         mintGuard.setNft(nft);
+        mintGuard.start(address(0), 0); // Start minting without admin minting
 
         buyer = makeAddr("buyer");
         vm.deal(buyer, 1000 ether); // Fund for many purchases

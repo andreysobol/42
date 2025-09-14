@@ -35,6 +35,7 @@ contract SuccessTest is Test {
             )
         );
         mintGuard.setNft(nft);
+        mintGuard.start(address(0), 0); // Start minting without admin minting
 
         buyer = makeAddr("buyer");
         receiver = makeAddr("receiver");
@@ -49,9 +50,9 @@ contract SuccessTest is Test {
 
         assertEq(nft.totalSupply(), 0, "total supply should be 0 before minting");
 
-        // Expect Minted event; check buyer (topic1) and data (fee), ignore tokenId
-        vm.expectEmit(true, false, false, true);
-        emit MintGuard.Minted(buyer, 1, FEE);
+        // Expect Minted event; check buyer (topic1), ignore tokenId
+        vm.expectEmit(true, false, false, false);
+        emit MintGuard.Minted(buyer, 1);
 
         vm.prank(buyer);
         uint256 tokenId = mintGuard.mint{value: FEE}(voucher);

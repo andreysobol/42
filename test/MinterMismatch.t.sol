@@ -35,6 +35,7 @@ contract MinterMismatchTest is Test {
             )
         );
         mintGuard.setNft(nft);
+        mintGuard.start(address(0), 0); // Start minting without admin minting
 
         buyer = makeAddr("buyer");
         other = makeAddr("other");
