@@ -124,3 +124,11 @@ forge script script/MintWithVoucher.s.sol \
 ```
 
 This script will generate the voucher signature and automatically send the mint transaction with the correct fee.
+
+## Sepolia Deployment
+
+- **NFT42:** [0xF7f7996ce30179CDe83699417D49F405d742c0F1](https://sepolia.etherscan.io/address/0xF7f7996ce30179CDe83699417D49F405d742c0F1)  
+- **MintGuard:** [0xb0cbda6f91a0d9215db1b7e662ba31c8b312cc54](https://sepolia.etherscan.io/address/0xb0cbda6f91a0d9215db1b7e662ba31c8b312cc54)  
+
+Contracts deployed and verified on Sepolia for testing.  
+Use Sepolia metadata CID for token URIs and content range (`1..128`).  
