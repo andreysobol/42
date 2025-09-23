@@ -36,7 +36,7 @@ contract NFT42 is ERC721 {
     /// @param _maxTokens The maximum number of tokens that can ever be minted.
     /// @dev Reverts with ZeroAddress error if _mintGuard is address(0).
     /// @dev Reverts with InvalidMaxTokens error if _maxTokens is 0.
-    constructor(string memory _baseMetadataUri, address _mintGuard, uint256 _maxTokens) ERC721("42", "LT42") {
+    constructor(string memory _baseMetadataUri, address _mintGuard, uint256 _maxTokens) ERC721("42 by LTV Protocol", "LT42") {
         require(_mintGuard != address(0), ZeroAddress());
         require(_maxTokens > 0, InvalidMaxTokens());
         baseMetadataUri = _baseMetadataUri;
