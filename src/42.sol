@@ -38,7 +38,9 @@ contract NFT42 is ERC721 {
     /// @dev Reverts with ZeroAddress error if _mintGuard is address(0).
     /// @dev Reverts with InvalidMaxTokens error if _maxTokens is 0.
     /// @dev Reverts with EmptyBaseMetadataUri error if _baseMetadataUri is empty.
-    constructor(string memory _baseMetadataUri, address _mintGuard, uint256 _maxTokens) ERC721("42 by LTV Protocol", "LT42") {
+    constructor(string memory _baseMetadataUri, address _mintGuard, uint256 _maxTokens)
+        ERC721("42 by LTV Protocol", "LT42")
+    {
         require(_mintGuard != address(0), ZeroAddress());
         require(_maxTokens > 0, InvalidMaxTokens());
         require(bytes(_baseMetadataUri).length > 0, EmptyBaseMetadataUri());
