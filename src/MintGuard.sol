@@ -99,16 +99,15 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     /// @param amount The number of NFTs to mint (ignored if to is address(0)).
     /// @dev Always sets mintStarted to true and emits MintStarted event.
     /// @dev If to is not address(0) and amount > 0, performs admin minting to the specified address.
-    /// @dev Reverts with ZeroAddress error if NFT contract is not set when attempting admin minting.
+    /// @dev Reverts with ZeroAddress error if NFT contract is not set.
     /// @dev Emits Minted event for each NFT minted during admin minting.
     function start(address to, uint256 amount) external onlyOwner nonReentrant {
         require(!mintStarted, MintingAlreadyStarted());
+        require(address(nft) != address(0), ZeroAddress());
         mintStarted = true;
         emit MintStarted();
 
         if (to != address(0) && amount > 0) {
-            require(address(nft) != address(0), ZeroAddress());
-
             for (uint256 i = 0; i < amount; i++) {
                 uint256 tokenId = nft.mint(to);
                 emit Minted(msg.sender, to, tokenId);
