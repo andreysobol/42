@@ -13,6 +13,7 @@ contract NFT42 is ERC721 {
     error MaxTokensReached(uint256 maxTokens);
     error ZeroAddress();
     error InvalidMaxTokens();
+    error EmptyBaseMetadataUri();
 
     /// @notice Internal function to verify that the caller is the authorized mint guard contract.
     /// @dev This function checks if the current message sender matches the stored mintGuard address.
@@ -36,9 +37,11 @@ contract NFT42 is ERC721 {
     /// @param _maxTokens The maximum number of tokens that can ever be minted.
     /// @dev Reverts with ZeroAddress error if _mintGuard is address(0).
     /// @dev Reverts with InvalidMaxTokens error if _maxTokens is 0.
+    /// @dev Reverts with EmptyBaseMetadataUri error if _baseMetadataUri is empty.
     constructor(string memory _baseMetadataUri, address _mintGuard, uint256 _maxTokens) ERC721("42 by LTV Protocol", "LT42") {
         require(_mintGuard != address(0), ZeroAddress());
         require(_maxTokens > 0, InvalidMaxTokens());
+        require(bytes(_baseMetadataUri).length > 0, EmptyBaseMetadataUri());
         baseMetadataUri = _baseMetadataUri;
         mintGuard = _mintGuard;
         MAX_TOKENS = _maxTokens;
