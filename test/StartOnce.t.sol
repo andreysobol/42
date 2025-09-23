@@ -51,10 +51,10 @@ contract StartOnceTest is Test {
         emit MintGuard.MintStarted();
 
         // Expect Minted events for admin minting
-        vm.expectEmit(true, true, false, false);
-        emit MintGuard.Minted(adminReceiver, 1);
-        vm.expectEmit(true, true, false, false);
-        emit MintGuard.Minted(adminReceiver, 2);
+        vm.expectEmit(true, true, true, false);
+        emit MintGuard.Minted(address(this), adminReceiver, 1);
+        vm.expectEmit(true, true, true, false);
+        emit MintGuard.Minted(address(this), adminReceiver, 2);
 
         // First call to start should succeed
         mintGuard.start(adminReceiver, 2);
@@ -111,8 +111,8 @@ contract StartOnceTest is Test {
         assertEq(initialSupply, 0, "Initial supply should be 0");
 
         // Expect Minted event
-        vm.expectEmit(true, true, false, false);
-        emit MintGuard.Minted(buyer, 1);
+        vm.expectEmit(true, true, true, false);
+        emit MintGuard.Minted(buyer, buyer, 1);
 
         vm.prank(buyer);
         uint256 tokenId = mintGuard.mint{value: FEE}(voucher);

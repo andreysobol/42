@@ -31,7 +31,7 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     /// @notice Whether minting has been started by the owner.
     bool public mintStarted;
 
-    event Minted(address indexed buyer, uint256 indexed tokenId);
+    event Minted(address indexed payer, address indexed recipient, uint256 indexed tokenId);
     event MintStarted();
     event FeeUpdated(uint256 oldPrice, uint256 newPrice);
     event VoucherSignerUpdated(address indexed oldSigner, address indexed newSigner);
@@ -90,7 +90,7 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         mintAddress[voucher.minter] = true;
         require(address(nft) != address(0), ZeroAddress());
         tokenId = nft.mint(voucher.minter);
-        emit Minted(msg.sender, tokenId);
+        emit Minted(msg.sender, voucher.minter, tokenId);
     }
 
     /// @notice Start minting and optionally mint NFTs to an address - only owner can call this function.
@@ -111,7 +111,7 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
 
             for (uint256 i = 0; i < amount; i++) {
                 uint256 tokenId = nft.mint(to);
-                emit Minted(to, tokenId);
+                emit Minted(msg.sender, to, tokenId);
             }
         }
     }

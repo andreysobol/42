@@ -47,8 +47,8 @@ contract EventsTest is Test {
         MintGuard.Voucher memory voucher = MintGuard.Voucher({minter: buyer, v: v, r: r, s: s});
 
         // Expect Minted event with correct buyer and tokenId
-        vm.expectEmit(true, true, false, false);
-        emit MintGuard.Minted(buyer, 1);
+        vm.expectEmit(true, true, true, false);
+        emit MintGuard.Minted(buyer, buyer, 1);
 
         vm.prank(buyer);
         mintGuard.mint{value: FEE}(voucher);

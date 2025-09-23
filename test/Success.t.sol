@@ -51,8 +51,8 @@ contract SuccessTest is Test {
         assertEq(nft.totalSupply(), 0, "total supply should be 0 before minting");
 
         // Expect Minted event; check buyer (topic1), ignore tokenId
-        vm.expectEmit(true, false, false, false);
-        emit MintGuard.Minted(buyer, 1);
+        vm.expectEmit(true, true, false, false);
+        emit MintGuard.Minted(buyer, buyer, 1);
 
         vm.prank(buyer);
         uint256 tokenId = mintGuard.mint{value: FEE}(voucher);
