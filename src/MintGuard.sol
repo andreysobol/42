@@ -44,6 +44,7 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     error AlreadyMinted();
     error WithdrawFailed();
     error MintNotStarted();
+    error MintingAlreadyStarted();
 
     /// @notice Constructor that disables initializers to prevent direct initialization.
     /// @dev This is required for upgradeable contracts to prevent initialization outside of the proxy.
@@ -101,6 +102,7 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     /// @dev Reverts with ZeroAddress error if NFT contract is not set when attempting admin minting.
     /// @dev Emits Minted event for each NFT minted during admin minting.
     function start(address to, uint256 amount) external onlyOwner nonReentrant {
+        require(!mintStarted, MintingAlreadyStarted());
         mintStarted = true;
         emit MintStarted();
 
