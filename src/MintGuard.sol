@@ -31,7 +31,7 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     /// @notice Whether minting has been started by the owner.
     bool public mintStarted;
 
-    event Minted(address indexed buyer, uint256 indexed tokenId);
+    event Minted(address indexed payer, address indexed recipient, uint256 indexed tokenId);
     event MintStarted();
     event FeeUpdated(uint256 oldPrice, uint256 newPrice);
     event VoucherSignerUpdated(address indexed oldSigner, address indexed newSigner);
@@ -44,6 +44,7 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     error AlreadyMinted();
     error WithdrawFailed();
     error MintNotStarted();
+    error MintingAlreadyStarted();
 
     /// @notice Constructor that disables initializers to prevent direct initialization.
     /// @dev This is required for upgradeable contracts to prevent initialization outside of the proxy.
@@ -89,7 +90,7 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
         mintAddress[voucher.minter] = true;
         require(address(nft) != address(0), ZeroAddress());
         tokenId = nft.mint(voucher.minter);
-        emit Minted(msg.sender, tokenId);
+        emit Minted(msg.sender, voucher.minter, tokenId);
     }
 
     /// @notice Start minting and optionally mint NFTs to an address - only owner can call this function.
@@ -98,18 +99,18 @@ contract MintGuard is OwnableUpgradeable, ReentrancyGuardUpgradeable {
     /// @param amount The number of NFTs to mint (ignored if to is address(0)).
     /// @dev Always sets mintStarted to true and emits MintStarted event.
     /// @dev If to is not address(0) and amount > 0, performs admin minting to the specified address.
-    /// @dev Reverts with ZeroAddress error if NFT contract is not set when attempting admin minting.
+    /// @dev Reverts with ZeroAddress error if NFT contract is not set.
     /// @dev Emits Minted event for each NFT minted during admin minting.
     function start(address to, uint256 amount) external onlyOwner nonReentrant {
+        require(!mintStarted, MintingAlreadyStarted());
+        require(address(nft) != address(0), ZeroAddress());
         mintStarted = true;
         emit MintStarted();
 
         if (to != address(0) && amount > 0) {
-            require(address(nft) != address(0), ZeroAddress());
-
             for (uint256 i = 0; i < amount; i++) {
                 uint256 tokenId = nft.mint(to);
-                emit Minted(to, tokenId);
+                emit Minted(msg.sender, to, tokenId);
             }
         }
     }
