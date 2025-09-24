@@ -10,6 +10,18 @@ A non-upgradable **ERC-721** collection with an on-chain **`baseMetadataURI`** p
 - Fixed mint fee
 - Whitelist only
 
+## Collection Preview
+
+| 0 | 1 | 2 | 3 |
+|---|---|---|---|
+| ![0](content/mainnet/images/1.png) | ![1](content/mainnet/images/2.png) | ![2](content/mainnet/images/3.png) | ![3](content/mainnet/images/4.png) |
+| 4 | 5 | 6 | 7 |
+| ![4](content/mainnet/images/5.png) | ![5](content/mainnet/images/6.png) | ![6](content/mainnet/images/7.png) | ![7](content/mainnet/images/8.png) |
+| 8 | 9 | 10 | 11 |
+| ![8](content/mainnet/images/9.png) | ![9](content/mainnet/images/10.png) | ![10](content/mainnet/images/11.png) | ![11](content/mainnet/images/12.png) |
+| 12 | 13 | 14 | 15 |
+| ![12](content/mainnet/images/13.png) | ![13](content/mainnet/images/14.png) | ![14](content/mainnet/images/15.png) | ![15](content/mainnet/images/16.png) |
+
 ## IPFS CIDs
 
 - **Mainnet metadata CID:** `QmXTn6YvXZgNmNzyBN19RgYgpG6YeZNnTwo1zWbHSb8x5b`
@@ -132,3 +144,10 @@ This script will generate the voucher signature and automatically send the mint 
 
 Contracts deployed and verified on Sepolia for testing.  
 Use Sepolia metadata CID for token URIs and content range (`1..128`).  
+
+## Links
+
+- **Website**: [LTV](https://ltv.finance)
+- **Repository**: [GitHub Repository](https://github.com/ltvprotocol/ltv_v0)
+- **Documentation**: [Protocol Documentation](https://docs.ltv.finance)
+- **Twitter**: [@ltvprotocol](https://x.com/ltvprotocol)
