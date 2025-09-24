@@ -148,6 +148,6 @@ Use Sepolia metadata CID for token URIs and content range (`1..128`).
 ## Links
 
 - **Website**: [LTV](https://ltv.finance)
-- **Repository**: [GitHub Repository](https://github.com/ltvprotocol/ltv_v0)
+- **Protocol implementation**: [GitHub Repository](https://github.com/ltvprotocol/ltv_v0)
 - **Documentation**: [Protocol Documentation](https://docs.ltv.finance)
 - **Twitter**: [@ltvprotocol](https://x.com/ltvprotocol)
